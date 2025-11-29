@@ -13,11 +13,11 @@ from .forms import AlkatreszForm
 
 def endpoints(request):
     data = {
-        "Főoldal az útvonalakkal"               : "/",
-        "Mértékegység listázás és hozzáadás"    : "/mertekegyseg",
-        "Rendszámok hozzáadása"                 : "/rendszam",    
-        "Alkatrészcsoport hozzáadása"           : "/alkatreszcsoport",
-        "Alkatrész létrehozás és listázás "     : "/alkatresz"    
+        "Főoldal az útvonalakkal"                               : "/",
+        "Mértékegység listázás és hozzáadás"                    : "/mertekegyseg",
+        "Rendszámok hozzáadása"                                 : "/rendszam",    
+        "Alkatrészcsoport hozzáadása"                           : "/alkatreszcsoport",
+        "Alkatrész létrehozás, listázás, módosítás, törlés "    : "/alkatresz"    
     }
     return JsonResponse(data)
 
@@ -59,7 +59,7 @@ def addRendszam(request):
 def alkatresz(request):
     alkatreszek = Alkatresz.objects.all().order_by('cikkszam')
     mertekegysegek = Mertekegyseg.objects.all()
-    alkatreszcsoportok = Alkatreszcsoport.objects.all()
+    alkatreszcsoportok = Alkatreszcsoport.objects.all().order_by('alkcsop')
     context = {'alkatreszek':alkatreszek, 'mertekegysegek':mertekegysegek, 'alkatreszcsoportok':alkatreszcsoportok}
     return render(request,'alkatresz.html',context)
 

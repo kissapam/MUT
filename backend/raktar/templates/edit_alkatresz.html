@@ -1,7 +1,52 @@
 <h2>Alkatrész szerkesztése</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.as_p }} <!-- A view ban átadott mezőket p tag-ba csomagolja-->
+    <button type="submit" class="btn btn-success">Mentés</button> <!-- elküldi a szervernek az ürlapot-->
+    <a href="{% url 'raktar:alkatresz' %}" class="btn btn-secondary">Mégse</a> <!-- Mégse gomb visszairányít az alkatresz listához-->
+</form>
+
+<!-- 
+<h2>Alkatrész szerkesztése ha nem a form.as_p egyszerűsítést használnád (lehetne hozzá css is!)</h2>
+<form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="id_cikkszam">Cikkszám:</label>
+        {{ form.cikkszam }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_leiras">Leírás:</label>
+        {{ form.leiras }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_info">Info:</label>
+        {{ form.info }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_mertekegyseg">Mértékegység:</label>
+        {{ form.mertekegyseg }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_alkatreszcsoport">Csoport:</label>
+        {{ form.alkatreszcsoport }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_keszlet">Készlet:</label>
+        {{ form.keszlet }}
+    </div>
+
+    <div class="form-group">
+        <label for="id_listaar">Listaár:</label>
+        {{ form.listaar }}
+    </div>
+
     <button type="submit" class="btn btn-success">Mentés</button>
     <a href="{% url 'raktar:alkatresz' %}" class="btn btn-secondary">Mégse</a>
-</form>
+</form>  -->
+
