@@ -1,0 +1,7 @@
+<h2>Alkatrész szerkesztése</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Mentés</button>
+    <a href="{% url 'raktar:alkatresz' %}" class="btn btn-secondary">Mégse</a>
+</form>

@@ -1,0 +1,45 @@
+/* Alap táblázat stílus */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Fejléc */
+table thead {
+    background-color: #007bff;
+    color: white;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+/* Páros sorok színezése */
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Hover effekt */
+table tr:hover {
+    background-color: #e6f7ff;
+}
+
+/* Gomb stílus */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}

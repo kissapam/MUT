@@ -26,11 +26,20 @@
         <section>
             <!-- Rendszámok listája az adatbázisból -->
             <h2>Rendszámok listája:</h2>
-            <ul>
+            <table>
+                <th>
+                    <td>Rendszám</td>
+                    <td>Tulajdonos</td>
+                    <td>Lezárt</td>
+                </th>
                 {% for rendszam in rendszamok %}
-                <li>{{rendszam.rendszam}} -- {{ rendszam.tulajdonos}} </li>
+                <tr>
+                    <td>{{rendszam.rendszam}}</td>
+                    <td>{{rendszam.tulajdonos}}</td>
+                    <td>{{rendszam.lezart}}</td>
+                </tr>
                 {% endfor %}
-            </ul>
+            </table>
         </section>
     </div>
 

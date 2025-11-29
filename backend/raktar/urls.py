@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 
 app_name='raktar'
+
 urlpatterns = [
     path('',views.endpoints),
     path('mertekegyseg/', views.mertekegyseg, name='mertekegyseg'),
@@ -10,5 +11,11 @@ urlpatterns = [
     path('alkatreszcsoport/', views.alkatreszcsoport, name='alkatreszcsoport'),
     path('addAlkatreszCsoport/', views.addAlkatreszCsoport, name='addAlkatreszCsoport'),
     path('rendszam/', views.rendszam, name='rendszam'),
-    path('addRendszam/', views.addRendszam, name='addRendszam'), 
+    path('addRendszam/', views.addRendszam, name='addRendszam'),
+    path('alkatresz/', views.alkatresz, name='alkatresz'),
+    path('addAlkatresz/', views.addAlkatresz, name='addAlkatresz'),
+    path('deleteAlkatresz/<int:alkatreszId>', views.deleteAlkatreszById, name='deleteAlkatreszById'),
+    path('deleteAlkatreszByCikkszam', views.deleteAlkatreszByCikkszam, name='deleteAlkatreszByCikkszam'),
+    path('editAlkatresz/<int:alkatreszId>', views.editAlkatreszById, name='editAlkatreszById'),
+
 ]

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'raktar/style.css' %}">
+    <title>Alkatresz</title>
+</head>
+<body>
+    <section>
+            <h2>Alkatrész hozzáadás:</h2>
+            <form action=" {% url 'raktar:addAlkatresz' %} " method="post">
+                {% csrf_token %}
+                <label>
+                    <p>Paraméterek:<br>
+                        <label >
+                            Cikkszám: <input type="text" name="ujCikkszam" id="ujCikkszam">
+                        </label><br>
+                        <label>
+                            Leírás: <input type="text" name="ujLeiras" id="ujLeiras">
+                        </label><br>
+                        <label>
+                            Infó: <input type="text" name="ujInfo" id="ujInfo">
+                        </label><br>
+                        <label>
+                            <select name="ujMertekegyseg" id="ujMertekegyseg">
+                                
+                            </select>
+
+
+                            Mértékegység: <input type="text" name="ujMertekegyseg" id="ujMertekegyseg">
+                        </label><br>
+                        <label>
+                            Alkatrészcsoport<input type="text" name="ujAlkatreszCsoport" id="ujAlkatreszCsoport">
+                        </label><br>
+                        <label>
+                            Készlet: <input type="number" name="ujKeszlet" id="ujKeszlet">
+                        </label><br>
+                        <label>
+                            Listaár <input type="number" name="ujListaar" id="ujListaar">     
+                        </label><br>
+                        <input type="submit" value="Új Alkatrész">
+                    </p>
+                </label>
+            </form>
+    </section>
+    <section>
+        <h2>Alkatrész törlése cikkszám alapján:</h2>
+        
+        <form action= " {% url 'raktar:deleteAlkatreszByCikkszam' %} " method="post">
+            {% csrf_token %}
+            <label>
+                <input type="text" name="alkatreszCikkszam" id="alkatreszCikkszam">
+                <input type="submit" value="Törlés">
+            </label>
+        </form>
+    </section>
+    <section>
+    <h1>Alkatreszek: </h1>
+
+    <table>
+        <tr>
+           <th>cikkszám</th>
+           <th>leírás</th>
+           <th>info</th>
+           <th>mértékegység</th>
+           <th>csoport</th>
+           <th>keszlet</th>
+           <th>listaár</th>
+           <th>törlés</th>
+           <th>törlés_gombbal</th>
+        </tr>
+        {% for i in alkatreszek%}
+        <tr>
+            <td>{{i.cikkszam}}</td>
+            <td>{{i.leiras}}</td>
+            <td>{{i.info}}</td>
+            <td>{{i.mertekegyseg}}</td>
+            <td>{{i.alkatreszcsoport}}</td>
+            <td>{{i.keszlet}}</td>
+            <td>{{i.listaar}}</td>
+            <!-- Itt a tábla oszlopában hivatkozok az ID alapján törlő függvényre -->
+            <!-- Kell az app_name a függvény elé ÉS AZ ID HOZZÁFŰZÉSE FURFANGOS nekem.-->>                
+            <td><a href="{% url 'raktar:deleteAlkatreszById' i.id %}">Törlés</a></td>
+            <!-- Elegánsabb megoldás egy mini ürlap !-->>                
+            <td>
+                <form method="post" action="{% url 'raktar:deleteAlkatreszById' i.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
+                </form>
+            </td>
+            <!-- Szerkesztés gomb ?-->
+            <td>
+                <a href="{% url 'raktar:editAlkatreszById' i.id %}" class="btn btn-primary btn-sm">
+                Szerkesztés</a>
+            </td>
+            
+        </tr>
+        {% endfor %}
+    </table>
+    </section>
+</body>
+</html>
