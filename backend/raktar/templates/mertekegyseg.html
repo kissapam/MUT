@@ -24,13 +24,18 @@
             </form>
         </section>
         <section>
-            <!-- Mértékegységek listája az adatbázisból -->
-            <h2>Mértékegységek listája:</h2>
-            <ul>
-                {% for mertekegyseg in mertekegysegek %}
-                <li>{{mertekegyseg.mertegys}}</li>
-                {% endfor %}
-            </ul>
+            <h2>Mértékegységek az adatbázisból</h2>
+            <table>
+            <tr>
+                <th>Id:</th>
+                <th>csoport:</th>
+            {% for i in mertekegysegek %}
+            </tr>
+                <td>{{i.id}}</td>
+                <td>{{i.mertegys}}</td>
+            </tr>
+            {% endfor %}
+            </table>
         </section>        
     </div>
     

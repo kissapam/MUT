@@ -1,28 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from .models import Rendszam, Mertekegyseg, Alkatreszcsoport, Alkatresz
+from .models import Rendszam, Mertekegyseg, Alkatreszcsoport, Alkatresz, Beszallito, Bizonylat, Bizonylatsor
 
 from .forms import AlkatreszForm
 
-
-
-
-
-
-
-
+####################################################################################
 def endpoints(request):
     data = {
         "Főoldal az útvonalakkal"                               : "/",
         "Mértékegység listázás és hozzáadás"                    : "/mertekegyseg",
         "Rendszámok hozzáadása"                                 : "/rendszam",    
         "Alkatrészcsoport hozzáadása"                           : "/alkatreszcsoport",
-        "Alkatrész létrehozás, listázás, módosítás, törlés "    : "/alkatresz"    
+        "Alkatrész létrehozás, listázás, módosítás, törlés "    : "/alkatresz",    
+        "Beszállító hozzáadása"                                 : "/beszallito",
     }
     return JsonResponse(data)
 
 
-# Create your views here.
+############################################    # Create your views here.
 def mertekegyseg(request):
     mertekegysegek = Mertekegyseg.objects.all()
     context = {'mertekegysegek': mertekegysegek}
@@ -44,6 +39,17 @@ def addAlkatreszCsoport(request):
     newRecord = Alkatreszcsoport(alkcsop = newAlkatreszCsoport)
     newRecord.save()
     return redirect("/alkatreszcsoport")   
+##############################################################
+def beszallito(request):
+    beszallitok =Beszallito.objects.all()
+    context = {'beszallitok': beszallitok}
+    return render(request,'beszallito.html', context)
+
+def addBeszallito(request):
+    newBeszallito = request.POST["ujBeszallito"]
+    newRecord = Beszallito(beszallito = newBeszallito)
+    newRecord.save()
+    return redirect("/beszallito")   
 ###############################################################
 def rendszam(request):
     rendszamok = Rendszam.objects.all().order_by('rendszam')
@@ -52,7 +58,8 @@ def rendszam(request):
 
 def addRendszam(request):
     newRendszam = request.POST["ujRendszam"]
-    newRekord = Rendszam(rendszam = newRendszam, tulajdonos = "Béla", lezart = False) # Ez így még csak teszt két adat nem az ürlapról jön!
+    newTulajdonos = request.POST["ujTulajdonos"]    
+    newRekord = Rendszam(rendszam = newRendszam, tulajdonos = newTulajdonos, lezart = False) # Ez így még csak teszt két adat nem az ürlapról jön!
     newRekord.save()
     return redirect("/rendszam")
 ###############################################################

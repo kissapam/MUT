@@ -1,5 +1,3 @@
-from django.db import models
-
 # Create your models here.
 from django.db import models
 
@@ -36,7 +34,7 @@ class Alkatreszcsoport(models.Model):
 
 
 class Bizonylat(models.Model):
-    gebizid = models.CharField(max_length=20)
+    genbizid = models.CharField(max_length=20)
     szallito = models.ForeignKey(Beszallito, on_delete=models.CASCADE, related_name="bizonylatok")
     rendszam = models.ForeignKey(Rendszam, on_delete=models.CASCADE, related_name="bizonylatok")
     bizonylattipus = models.BooleanField()

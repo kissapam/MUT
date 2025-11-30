@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="container">
-        <header><h1>Alkatrész Csoportok</h1></header>
+        <header><h1>Alkatrészcsoportok</h1></header>
         <section>
             <h2>Csoport hozzáadás</h2>
             <form action=" {% url 'raktar:addAlkatreszCsoport' %} " method="post">
@@ -24,9 +24,20 @@
             </form>
         </section>
     </div>
-    <h1>Itt lesz egy lista</h1>
-
-
+        <section>
+            <h2>Alkatrészcsoprtok az adatbázisból</h2>
+            <table>
+            <tr>
+                <th>Id:</th>
+                <th>csoport:</th>
+            {% for i in alkatreszcsoportok %}
+            </tr>
+                <td>{{i.id}}</td>
+                <td>{{i.alkcsop}}</td>
+            </tr>
+            {% endfor %}
+            </table>
+        </section>
     <!-- Latest compiled JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
