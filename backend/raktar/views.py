@@ -108,3 +108,28 @@ def editAlkatreszById(request, alkatreszId): # ez a rész az AI segítségével 
         form = AlkatreszForm(instance=alkatresz)
     return render(request, 'edit_alkatresz.html', {'form': form})
 ##############################################################################################
+def bebizonylat(request):
+    bebizonylatok = Bizonylat.objects.filter(bizonylattipus=True)
+    beszallitok = Beszallito.objects.all()
+    rendszamok = Rendszam.objects.all()    
+    context = {'bebizonylatok':bebizonylatok, 'beszallitok':beszallitok, 'rendszamok':rendszamok}
+    return render(request,'bebizonylat.html',context)
+
+def addBebizonylat(request):
+    newSzallito = request.POST["ujSzallito"]
+    # kell a szallitó példány tehát amit az értékadáshoz használok:
+    newSzallitoPeldany = Beszallito.objects.get(beszallito = newSzallito)    
+    newSzamlaszam = request.POST["ujSzamlaszam"]
+    newSzallitolevelszam = request.POST["ujSzallitolevelszam"]    
+    newDatum = request.POST["ujDatum"]
+        
+    newRekord = Bizonylat(genbizid = "2555", szallito = newSzallitoPeldany, bizonylattipus = True, szamlaszam = newSzamlaszam, szallitolevelszam = newSzallitolevelszam, datum = newDatum, lezart = False)
+    newRekord.save()
+    return redirect("/bebizonylat")
+"""
+def deleteAlkatreszById(request, alkatreszId): # Alkatrész törlése a paraméterben kapott Id alapján
+    torlendoAlkatresz = Alkatresz.objects.get(pk = alkatreszId)
+    torlendoAlkatresz.delete()
+    return redirect("/alkatresz")
+    
+    """

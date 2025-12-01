@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'raktar/style.css' %}">
+    <title>Raktári bevételezés</title>
+</head>
+<body>
+    <section>
+            <h2>Bevételi bizonylat:</h2>
+            <form action=" {% url 'raktar:addBebizonylat' %} " method="post">
+                {% csrf_token %}
+                <label>
+                    <p>Paraméterek:<br>
+                        <label >
+                            <!-- Beszállító kiválasztása legördülő listával az adatbázisból-->
+                            Beszállító: 
+                            <select name="ujSzallito" id="ujSzallito">
+                                {% for item in beszallitok %}
+                                <option value="{{item}}">{{item}}</option>
+                                {% endfor %}
+                            </select>                            
+                        </label><br>
+
+                        <label>
+                            Számlaszám: <input type="text" name="ujSzamlaszam" id="ujSzamlaszam">
+                        </label><br>
+                        <label>
+                            Szállítólevél száma: <input type="text" name="ujSzallitolevelszam" id="ujSzallitolevelszam">
+                        </label><br>
+                        
+                        <label>
+                            Dátum: <input type="date" name="ujDatum" id="ujDatum">     
+                        </label><br>
+                        <input type="submit" value="Új Bevételi bizonylat">
+                    </p>
+                </label>
+            </form>
+    </section>
+    
+    <section>
+    <h2>Bevételi Bizonylatok: </h2>
+    <table>
+        <tr>
+           <th>id</th>
+           <th>gen_id</th>
+           <th>szállító</th>
+           <th>bizonylattipus</th>
+           <th>számlaszám</th>
+           <th>szállítólevél szám</th>
+           <th>dátum</th>
+           <th>lezárt</th>
+           <th>törlés_gombbal</th>
+        </tr>
+        {% for i in bebizonylatok %}        
+        <tr>
+            <td>{{i.id}}</td>
+            <td>{{i.genbizid}}</td>
+            <td>{{i.szallito}}</td>
+            <td>{{i.bizonylattipus}}</td>
+            <td>{{i.szamlaszam}}</td>
+            <td>{{i.szallitolevelszam}}</td>
+            <td>{{i.datum}}</td>
+            <!-- Itt a tábla oszlopában hivatkozok az ID alapján törlő függvényre -->
+            <!-- Kell az app_name a függvény elé ÉS AZ ID HOZZÁFŰZÉSE FURFANGOS nekem.-->                
+            
+            <!-- Elegánsabb megoldás egy mini ürlap !-->                
+            <td> <!--
+                
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
+                </form>  -->
+            </td>
+            <!-- Szerkesztés gomb ? EGYENLŐRE SE GOMB SE ÜRLAP !!!!!!!!!!!!!
+            <td>
+                <a href="{% url 'raktar:editAlkatreszById' i.id %}" class="btn btn-primary btn-sm">
+                Szerkesztés</a>
+            </td> -->
+        </tr>
+        {% endfor %}
+    </table>
+    </section>
+</body>
+</html>
+

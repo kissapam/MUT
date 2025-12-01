@@ -35,8 +35,8 @@ class Alkatreszcsoport(models.Model):
 
 class Bizonylat(models.Model):
     genbizid = models.CharField(max_length=20)
-    szallito = models.ForeignKey(Beszallito, on_delete=models.CASCADE, related_name="bizonylatok")
-    rendszam = models.ForeignKey(Rendszam, on_delete=models.CASCADE, related_name="bizonylatok")
+    szallito = models.ForeignKey(Beszallito, on_delete=models.CASCADE, related_name="bizonylatok", blank=True, null=True)
+    rendszam = models.ForeignKey(Rendszam, on_delete=models.CASCADE, related_name="bizonylatok", blank=True, null=True)
     bizonylattipus = models.BooleanField()
     szamlaszam = models.CharField(max_length=50, blank=True, null=True)
     szallitolevelszam = models.CharField(max_length=50, blank=True, null=True)
@@ -44,7 +44,7 @@ class Bizonylat(models.Model):
     lezart = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.gebizid
+        return self.genbizid
 
 
 class Alkatresz(models.Model):

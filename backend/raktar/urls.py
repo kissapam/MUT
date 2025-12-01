@@ -19,5 +19,7 @@ urlpatterns = [
     path('deleteAlkatresz/<int:alkatreszId>', views.deleteAlkatreszById, name='deleteAlkatreszById'),
     path('deleteAlkatreszByCikkszam', views.deleteAlkatreszByCikkszam, name='deleteAlkatreszByCikkszam'),
     path('editAlkatresz/<int:alkatreszId>', views.editAlkatreszById, name='editAlkatreszById'),
+    path('bebizonylat/', views.bebizonylat, name='bebizonylat'),
+    path('addBebizonylat/', views.addBebizonylat, name='addBebizonylat'),
 
 ]
