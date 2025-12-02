@@ -3,11 +3,21 @@ from django.http import HttpResponse, JsonResponse
 from .models import Rendszam, Mertekegyseg, Alkatreszcsoport, Alkatresz, Beszallito, Bizonylat, Bizonylatsor
 
 from .forms import AlkatreszForm
+######################################################################## MENU ?????
+def home(request):
+    return render(request,'home.html')
+
+def products(request):
+    return render(request,'products.html')
+
+def about(request):
+    return render(request,'about.html')
 
 ####################################################################################
+"""
 def endpoints(request):
     data = {
-        "Főoldal az útvonalakkal"                               : "/",
+        "Főoldal az útvonalakkal"                               : "/lista",
         "Mértékegység listázás és hozzáadás"                    : "/mertekegyseg",
         "Rendszámok hozzáadása"                                 : "/rendszam",    
         "Alkatrészcsoport hozzáadása"                           : "/alkatreszcsoport",
@@ -15,8 +25,7 @@ def endpoints(request):
         "Beszállító hozzáadása"                                 : "/beszallito",
     }
     return JsonResponse(data)
-
-
+"""
 ############################################    # Create your views here.
 def mertekegyseg(request):
     mertekegysegek = Mertekegyseg.objects.all()

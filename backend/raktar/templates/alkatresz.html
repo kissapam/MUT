@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'raktar/style.css' %}">
-    <title>Alkatresz</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Alkatrészek karbantartása{% endblock %}
+
+{% block content %}
     <section>
             <h2>Alkatrész hozzáadás:</h2>
             <form action=" {% url 'raktar:addAlkatresz' %} " method="post">
@@ -105,5 +100,4 @@
         {% endfor %}
     </table>
     </section>
-</body>
-</html>
+{% endblock %}

@@ -5,7 +5,10 @@ from . import views
 app_name='raktar'
 
 urlpatterns = [
-    path('',views.endpoints),
+    path('', views.home, name='home'),
+    path('termekek/', views.products, name='products'),
+    path('rolunk/', views.about, name='about'),    
+    #path('lista/',views.endpoints),
     path('mertekegyseg/', views.mertekegyseg, name='mertekegyseg'),
     path('addMertekegyseg/', views.addMertekegyseg, name='addMertekegyseg'), 
     path('alkatreszcsoport/', views.alkatreszcsoport, name='alkatreszcsoport'),
