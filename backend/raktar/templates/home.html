@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Kezdőlap{% endblock %}
+
+{% block content %}
+  <!-- Bootstrap grid példa -->
+  <div class="row">
+    <div class="col-md-8">
+      <h2>Megvalósított menüpontok!</h2>
+      <p>
+        <ul>
+          <li>"Főoldal az útvonalakkal"                               : "/lista",</li>
+          <li>"Mértékegység listázás és hozzáadás"                    : "/mertekegyseg",</li>
+          <li>"Rendszámok hozzáadása"                                 : "/rendszam",</li>
+          <li>"Alkatrészcsoport hozzáadása"                           : "/alkatreszcsoport",</li>
+          <li>"Alkatrész létrehozás, listázás, módosítás, törlés "    : "/alkatresz",</li>
+          <li>"Beszállító hozzáadása"                                 : "/beszallito",</li>
+          <li>"Bevételi bizonylat készítés"                           : "/bebizonylat",</li>
+        </ul>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <div class="alert alert-info">
+        Ez egy oldalsáv információval.
+      </div>
+    </div>
+  </div>
+{% endblock %}
