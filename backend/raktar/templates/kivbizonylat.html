@@ -1,62 +1,56 @@
-
 {% extends 'base.html' %}
 
-{% block title %}Bevételi bizonylatok{% endblock %}
+{% block title %}Kivételi bizonylatok{% endblock %}
 
 {% block content %}
 <section>
-    <form action="{% url 'raktar:addBebizonylat' %}" method="post">
+    <form action="{% url 'raktar:addKivbizonylat' %}" method="post">
         {% csrf_token %}
         <p>Paraméterek:<br>
             <label>
-                Beszállító:
-                <select name="ujSzallito" id="ujSzallito">
-                    {% for item in beszallitok %}
-                    <option value="{{ item.beszallito }}">{{ item.beszallito }}</option>
+                Rendszám:
+                <select name="ujRendszam" id="ujRendszam">
+                    {% for item in rendszamok %}
+                    <option value="{{ item.rendszam }}">{{ item.rendszam }} - {{ item.tulajdonos }}</option>
                     {% endfor %}
                 </select>
             </label><br>
 
-            <label>
-                Számlaszám: <input type="text" name="ujSzamlaszam" id="ujSzamlaszam">
-            </label><br>
             <label>
                 Szállítólevél száma: <input type="text" name="ujSzallitolevelszam" id="ujSzallitolevelszam">
             </label><br>
             <label>
                 Dátum: <input type="date" name="ujDatum" id="ujDatum">
             </label><br>
-            <input type="submit" value="Új Bevételi bizonylat">
+            <input type="submit" value="Új Kivételi bizonylat">
         </p>
     </form>
 </section>
 
 <section>
-    <h2>Bevételi Bizonylatok: </h2>
+    <h2>Kivételi Bizonylatok: </h2>
     <table border="1">
         <tr>
             <th>id</th>
             <th>gen_id</th>
-            <th>szállító</th>
+            <th>rendszám</th>
             <th>bizonylattipus</th>
-            <th>számlaszám</th>
             <th>szállítólevél szám</th>
             <th>dátum</th>
             <th>lezárt</th>
             <th>törlés</th>
         </tr>
-        {% for i in bebizonylatok %}
+        {% for i in kivbizonylatok %}
         <tr>
             <td>{{ i.id }}</td>
             <td>{{ i.genbizid }}</td>
-            <td>{{ i.szallito }}</td>
+            <td>{{ i.rendszam }}</td>
             <td>{{ i.bizonylattipus }}</td>
-            <td>{{ i.szamlaszam }}</td>
             <td>{{ i.szallitolevelszam }}</td>
             <td>{{ i.datum }}</td>
             <td>{{ i.lezart }}</td>
             <td>
-                <form action="{% url 'raktar:deleteBebizonylat' i.id %}" method="post" style="display:inline;">
+                <form action="{% url 'raktar:deleteKivbizonylat' i.id %}" method="post" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
                 </form>

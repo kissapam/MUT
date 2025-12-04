@@ -46,6 +46,7 @@
                 </label>
             </form>
     </section>
+    <!--  Ez felesleges és nem célravezető
     <section>
         <h2>Alkatrész törlése cikkszám alapján:</h2>
         
@@ -56,7 +57,7 @@
                 <input type="submit" value="Törlés">
             </label>
         </form>
-    </section>
+    </section>  -->
     <section>
     <h2>Alkatrészek: </h2>
     <table>
@@ -69,7 +70,7 @@
            <th>keszlet</th>
            <th>listaár</th>
            <th>törlés</th>
-           <th>törlés_gombbal</th>
+           <th>szerkesztés</th>
         </tr>
         {% for i in alkatreszek%}
         <tr>
@@ -79,11 +80,8 @@
             <td>{{i.mertekegyseg}}</td>
             <td>{{i.alkatreszcsoport}}</td>
             <td>{{i.keszlet}}</td>
-            <td>{{i.listaar}}</td>
-            <!-- Itt a tábla oszlopában hivatkozok az ID alapján törlő függvényre -->
-            <!-- Kell az app_name a függvény elé ÉS AZ ID HOZZÁFŰZÉSE FURFANGOS nekem.-->>                
-            <td><a href="{% url 'raktar:deleteAlkatreszById' i.id %}">Törlés</a></td>
-            <!-- Elegánsabb megoldás egy mini ürlap !-->>                
+            <td>{{i.listaar}}</td>            
+            <!-- Elegánsabb megoldás egy mini ürlap !-->
             <td>
                 <form method="post" action="{% url 'raktar:deleteAlkatreszById' i.id %}" style="display:inline;">
                 {% csrf_token %}

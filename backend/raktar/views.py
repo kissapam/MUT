@@ -7,26 +7,6 @@ from .forms import AlkatreszForm
 def home(request):
     return render(request,'home.html')
 
-def products(request):
-    return render(request,'products.html')
-
-def about(request):
-    return render(request,'about.html')
-
-####################################################################################
-"""
-def endpoints(request):
-    data = {
-        "Főoldal az útvonalakkal"                               : "/lista",
-        "Mértékegység listázás és hozzáadás"                    : "/mertekegyseg",
-        "Rendszámok hozzáadása"                                 : "/rendszam",    
-        "Alkatrészcsoport hozzáadása"                           : "/alkatreszcsoport",
-        "Alkatrész létrehozás, listázás, módosítás, törlés "    : "/alkatresz",    
-        "Beszállító hozzáadása"                                 : "/beszallito",
-    }
-    return JsonResponse(data)
-"""
-############################################    # Create your views here.
 def mertekegyseg(request):
     mertekegysegek = Mertekegyseg.objects.all()
     context = {'mertekegysegek': mertekegysegek}
@@ -36,7 +16,13 @@ def addMertekegyseg(request):
     newMertekegyseg = request.POST["ujMertekegyseg"]
     newRecord = Mertekegyseg(mertegys = newMertekegyseg)
     newRecord.save()
-    return redirect("/mertekegyseg")        
+    return redirect("/mertekegyseg")
+
+def deleteMertekegysegById(request, id): 
+    torlendoMertekegyseg = Mertekegyseg.objects.get(pk = id)
+    torlendoMertekegyseg.delete()
+    return redirect("/mertekegyseg")
+        
 ##############################################################
 def alkatreszcsoport(request):
     alkatreszcsoportok = Alkatreszcsoport.objects.all()
@@ -68,10 +54,10 @@ def rendszam(request):
 def addRendszam(request):
     newRendszam = request.POST["ujRendszam"]
     newTulajdonos = request.POST["ujTulajdonos"]    
-    newRekord = Rendszam(rendszam = newRendszam, tulajdonos = newTulajdonos, lezart = False) # Ez így még csak teszt két adat nem az ürlapról jön!
+    newRekord = Rendszam(rendszam = newRendszam, tulajdonos = newTulajdonos, lezart = False) # Ez így még csak teszt
     newRekord.save()
     return redirect("/rendszam")
-###############################################################
+###########################################  ALKATRÉSZ 
 def alkatresz(request):
     alkatreszek = Alkatresz.objects.all().order_by('cikkszam')
     mertekegysegek = Mertekegyseg.objects.all()
@@ -100,7 +86,7 @@ def deleteAlkatreszById(request, alkatreszId): # Alkatrész törlése a paramét
     torlendoAlkatresz.delete()
     return redirect("/alkatresz")
     
-def deleteAlkatreszByCikkszam(request): # Törlés az alkatrész cikkszáma alapján ürlapon kezdeményezve
+def deleteAlkatreszByCikkszam(request): # Törlés az alkatrész cikkszáma alapján ürlapon kezdeményezve (nem hiszem hogy marad :) )
     torlendoAlkatreszCikkszam = request.POST["alkatreszCikkszam"]
     torlendoAlkatresz = Alkatresz.objects.get(cikkszam = torlendoAlkatreszCikkszam)
     torlendoAlkatresz.delete()
@@ -116,29 +102,77 @@ def editAlkatreszById(request, alkatreszId): # ez a rész az AI segítségével 
     else:
         form = AlkatreszForm(instance=alkatresz)
     return render(request, 'edit_alkatresz.html', {'form': form})
-##############################################################################################
+
+##############################################   Bevételi Bizonylat
+
 def bebizonylat(request):
     bebizonylatok = Bizonylat.objects.filter(bizonylattipus=True)
     beszallitok = Beszallito.objects.all()
-    rendszamok = Rendszam.objects.all()    
-    context = {'bebizonylatok':bebizonylatok, 'beszallitok':beszallitok, 'rendszamok':rendszamok}
-    return render(request,'bebizonylat.html',context)
+    rendszamok = Rendszam.objects.all()
+    context = {
+        'bebizonylatok': bebizonylatok,
+        'beszallitok': beszallitok,
+        'rendszamok': rendszamok
+    }
+    return render(request, 'bebizonylat.html', context)
 
 def addBebizonylat(request):
-    newSzallito = request.POST["ujSzallito"]
-    # kell a szallitó példány tehát amit az értékadáshoz használok:
-    newSzallitoPeldany = Beszallito.objects.get(beszallito = newSzallito)    
-    newSzamlaszam = request.POST["ujSzamlaszam"]
-    newSzallitolevelszam = request.POST["ujSzallitolevelszam"]    
-    newDatum = request.POST["ujDatum"]
-        
-    newRekord = Bizonylat(genbizid = "2555", szallito = newSzallitoPeldany, bizonylattipus = True, szamlaszam = newSzamlaszam, szallitolevelszam = newSzallitolevelszam, datum = newDatum, lezart = False)
-    newRekord.save()
-    return redirect("/bebizonylat")
-"""
-def deleteAlkatreszById(request, alkatreszId): # Alkatrész törlése a paraméterben kapott Id alapján
-    torlendoAlkatresz = Alkatresz.objects.get(pk = alkatreszId)
-    torlendoAlkatresz.delete()
-    return redirect("/alkatresz")
-    
-    """
+    if request.method == "POST":
+        newSzallito = request.POST["ujSzallito"]
+        newSzallitoPeldany = Beszallito.objects.get(beszallito=newSzallito)
+        newSzamlaszam = request.POST["ujSzamlaszam"]
+        newSzallitolevelszam = request.POST["ujSzallitolevelszam"]
+        newDatum = request.POST["ujDatum"]
+
+        newRekord = Bizonylat(
+            genbizid="2555",  # ezt itt még meg kell írnom !!!
+            szallito=newSzallitoPeldany,
+            bizonylattipus=True,
+            szamlaszam=newSzamlaszam,
+            szallitolevelszam=newSzallitolevelszam,
+            datum=newDatum,
+            lezart=False
+        )
+        newRekord.save()
+        return redirect("raktar:bebizonylat")
+
+# Bevételi bizonylat törlése
+def deleteBebizonylat(request, biz_id):
+    rekord = get_object_or_404(Bizonylat, id=biz_id, bizonylattipus=True)
+    rekord.delete()
+    return redirect("raktar:bebizonylat")
+
+
+########################## KIVÉTELI BIZONYLATOK
+
+def kivbizonylat(request):
+    kivbizonylatok = Bizonylat.objects.filter(bizonylattipus=False)
+    rendszamok = Rendszam.objects.all()
+    context = {
+        'kivbizonylatok': kivbizonylatok,
+        'rendszamok': rendszamok
+    }
+    return render(request, 'kivbizonylat.html', context)
+
+def addKivbizonylat(request):
+    if request.method == "POST":
+        newRendszam = request.POST["ujRendszam"]
+        newRendszamPeldany = Rendszam.objects.get(rendszam=newRendszam)
+        newSzallitolevelszam = request.POST["ujSzallitolevelszam"]
+        newDatum = request.POST["ujDatum"]
+
+        newRekord = Bizonylat(
+            genbizid="3555",  # ezt MEG KELL ÍRNI MÉG
+            rendszam=newRendszamPeldany,
+            bizonylattipus=False,
+            szallitolevelszam=newSzallitolevelszam,
+            datum=newDatum,
+            lezart=False
+        )
+        newRekord.save()
+        return redirect("raktar:kivbizonylat")
+
+def deleteKivbizonylat(request, biz_id):
+    rekord = get_object_or_404(Bizonylat, id=biz_id, bizonylattipus=False)
+    rekord.delete()
+    return redirect("raktar:kivbizonylat")
