@@ -4,14 +4,13 @@
 
 {% block content %}
     <section>
-            <h2>Alkatrész hozzáadás:</h2>
+            <h3>Alkatrész hozzáadás:</h3>
             <form action=" {% url 'raktar:addAlkatresz' %} " method="post">
                 {% csrf_token %}
-                <label>
-                    <p>Paraméterek:<br>
+                <label>                    
                         <label >
                             Cikkszám: <input type="text" name="ujCikkszam" id="ujCikkszam">
-                        </label><br>
+                        </label>
                         <label>
                             Leírás: <input type="text" name="ujLeiras" id="ujLeiras">
                         </label><br>
@@ -26,7 +25,7 @@
                                     <option value="{{item}}">{{item}}</option>
                                 {% endfor %}                                
                             </select>                            
-                        </label><br>
+                        </label>
                         <label>
                             Alkatrészcsoport: 
                             <select name="ujAlkatreszCsoport" id="ujAlkatreszCsoport">
@@ -34,10 +33,10 @@
                                     <option value="{{item}}">{{item}}</option>
                                 {% endfor %}                                
                             </select>
-                        </label><br>
+                        </label>
                         <label>
                             Készlet: <input type="number" name="ujKeszlet" id="ujKeszlet">
-                        </label><br>
+                        </label>
                         <label>
                             Listaár <input type="number" name="ujListaar" id="ujListaar">     
                         </label><br>
@@ -59,18 +58,18 @@
         </form>
     </section>  -->
     <section>
-    <h2>Alkatrészek: </h2>
+    <h3>Alkatrészek: </h3>
     <table>
         <tr>
-           <th>cikkszám</th>
-           <th>leírás</th>
-           <th>info</th>
-           <th>mértékegység</th>
-           <th>csoport</th>
-           <th>keszlet</th>
-           <th>listaár</th>
-           <th>törlés</th>
-           <th>szerkesztés</th>
+           <th>Cikkszám</th>
+           <th>Leírás</th>
+           <th>Info</th>
+           <th>Mértékegység</th>
+           <th>Csoport</th>
+           <th>Készlet</th>
+           <th>Listaár</th>
+           <th>Törlés</th>
+           <th>Szerkesztés</th>
         </tr>
         {% for i in alkatreszek%}
         <tr>

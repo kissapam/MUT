@@ -13,12 +13,16 @@ urlpatterns = [
     # ALkatrészcsoport
     path('alkatreszcsoport/', views.alkatreszcsoport, name='alkatreszcsoport'),
     path('addAlkatreszCsoport/', views.addAlkatreszCsoport, name='addAlkatreszCsoport'),
-    # Rendszám
-    path('rendszam/', views.rendszam, name='rendszam'),
-    path('addRendszam/', views.addRendszam, name='addRendszam'),
+    path('deleteAlkatreszCsoport/<int:id>', views.deleteAlkatreszCsoportById, name='deleteAlkatreszCsoportById'),
     # Beszállítók
     path('beszallito/', views.beszallito, name='beszallito'),
     path('addBeszallito/', views.addBeszallito, name='addBeszallito'),
+    path('deleteBeszallito/<int:id>', views.deleteBeszallitoById, name='deleteBeszallitoById'),
+    # Rendszám
+    path('rendszam/', views.rendszam, name='rendszam'),
+    path('addRendszam/', views.addRendszam, name='addRendszam'),
+    path('deleteRendszam/<int:id>', views.deleteRendszamById, name='deleteRendszamById'),
+    
     # Alkatrész
     path('alkatresz/', views.alkatresz, name='alkatresz'),    
     path('addAlkatresz/', views.addAlkatresz, name='addAlkatresz'),

@@ -1,9 +1,6 @@
-p{
-    color: blue
-}
 
 /* Alap táblázat stílus */
-table {
+table {    
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
@@ -17,11 +14,12 @@ table thead {
     color: white;
 }
 
-table th, table td {
+table td, table th {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
 }
+
 
 /* Páros sorok színezése */
 table tr:nth-child(even) {
@@ -45,5 +43,5 @@ table tr:hover {
 }
 
 .btn-danger:hover {
-    background-color: #c82333;
+    background-color: #a42632;
 }

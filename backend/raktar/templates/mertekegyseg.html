@@ -5,7 +5,7 @@
 {% block content %}
     <div class="container">        
         <section>
-            <h2>Mértékegység hozzáadás</h2>
+            <h3>Mértékegység hozzáadás</h3>
             <form action=" {% url 'raktar:addMertekegyseg' %} " method="post">
                 {% csrf_token %}
                 <label>
@@ -18,11 +18,13 @@
             </form>
         </section>
         <section>
-            <h2>Mértékegységek az adatbázisból</h2>
+            <h3>Mértékegységek az adatbázisból</h3>
             <table>
             <tr>
-                <th>Id:</th>
-                <th>csoport:</th>
+                <th>Id</th>
+                <th>Csoport</th>
+                <th>Törlés</th>
+
             {% for i in mertekegysegek %}
             </tr>
                 <td>{{i.id}}</td>

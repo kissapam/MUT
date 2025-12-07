@@ -8,34 +8,30 @@
         {% csrf_token %}
         <p>Paraméterek:<br>
             <label>
-                Rendszám:
-                <select name="ujRendszam" id="ujRendszam">
+                Rendszám: <!-- A SELECT lecserélve DATALIST-re a könnyebb keresés érdekében  -->
+                <input list="rendszamok" name="ujRendszam" id="ujRendszam">
+                <datalist id="rendszamok">
                     {% for item in rendszamok %}
-                    <option value="{{ item.rendszam }}">{{ item.rendszam }} - {{ item.tulajdonos }}</option>
+                    <option value="{{ item.rendszam }}">
                     {% endfor %}
-                </select>
-            </label><br>
-
-            <label>
-                Szállítólevél száma: <input type="text" name="ujSzallitolevelszam" id="ujSzallitolevelszam">
-            </label><br>
+                </datalist>
+            </label>
             <label>
                 Dátum: <input type="date" name="ujDatum" id="ujDatum">
-            </label><br>
+            </label>
             <input type="submit" value="Új Kivételi bizonylat">
         </p>
     </form>
 </section>
 
 <section>
-    <h2>Kivételi Bizonylatok: </h2>
+    <h3>Kivételi Bizonylatok: </h3>
     <table border="1">
         <tr>
             <th>id</th>
             <th>gen_id</th>
             <th>rendszám</th>
-            <th>bizonylattipus</th>
-            <th>szállítólevél szám</th>
+            <th>bizonylattipus</th>            
             <th>dátum</th>
             <th>lezárt</th>
             <th>törlés</th>
@@ -45,8 +41,7 @@
             <td>{{ i.id }}</td>
             <td>{{ i.genbizid }}</td>
             <td>{{ i.rendszam }}</td>
-            <td>{{ i.bizonylattipus }}</td>
-            <td>{{ i.szallitolevelszam }}</td>
+            <td>{{ i.bizonylattipus }}</td>            
             <td>{{ i.datum }}</td>
             <td>{{ i.lezart }}</td>
             <td>

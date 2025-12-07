@@ -71,3 +71,10 @@ class Bizonylatsor(models.Model):
 
     def __str__(self):
         return f"{self.bizonylat.gebizid} - {self.alkatresz.cikkszam}"
+    
+class AlapAdat(models.Model):
+    ev = models.CharField(max_length=10, null=False)
+    maxBizId = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.ev +"--"+str(self.maxBizId)

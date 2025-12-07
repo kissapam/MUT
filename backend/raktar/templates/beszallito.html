@@ -3,8 +3,7 @@
 {% block title %}Beszállítók karbantartása{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <header><h2>Beszállítókat karbantartó ürlap fejléce</h2></header>
+    <div class="container">        
         <section>
             <h2>Beszállító felvitele:</h2>
             <form action=" {% url 'raktar:addBeszallito' %} " method="post">
@@ -22,16 +21,23 @@
             <!-- Rendszámok listája az adatbázisból -->
             <h2>Beszaállítók listája:</h2>
             <table>
-                <th>
-                    <td>Id</td>
-                    <td>Beszállító</td>
-                    <td>Lezárt</td>
-                </th>
+                <tr>
+                    <th>Id:</th>
+                    <th>Beszállító</th>
+                    <th>Lezárt</th>
+                    <th>Törlés</th>
+                </tr>
                 {% for i in beszallitok %}
                 <tr>
                     <td>{{i.id}}</td>
                     <td>{{i.beszallito}}</td>
                     <td>{{i.lezart}}</td>
+                    <td>  <!-- Elegáns megoldás egy mini ürlappal !-->
+                        <form method="post" action="{% url 'raktar:deleteBeszallitoById' i.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </table>

@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
-from .models import Rendszam, Mertekegyseg, Alkatreszcsoport, Alkatresz, Beszallito, Bizonylat, Bizonylatsor
+from .models import Rendszam, Mertekegyseg, Alkatreszcsoport, Alkatresz, Beszallito, Bizonylat, Bizonylatsor, AlapAdat
 
 from .forms import AlkatreszForm
-######################################################################## MENU ?????
+############################################ MENU 
 def home(request):
     return render(request,'home.html')
-
+############################################ MÉRTÉKEGYSÉG
 def mertekegyseg(request):
     mertekegysegek = Mertekegyseg.objects.all()
     context = {'mertekegysegek': mertekegysegek}
@@ -23,7 +23,7 @@ def deleteMertekegysegById(request, id):
     torlendoMertekegyseg.delete()
     return redirect("/mertekegyseg")
         
-##############################################################
+############################################ ALKATRÉSZ
 def alkatreszcsoport(request):
     alkatreszcsoportok = Alkatreszcsoport.objects.all()
     context = {'alkatreszcsoportok': alkatreszcsoportok}
@@ -33,8 +33,13 @@ def addAlkatreszCsoport(request):
     newAlkatreszCsoport = request.POST["ujAlkatreszCsoport"]
     newRecord = Alkatreszcsoport(alkcsop = newAlkatreszCsoport)
     newRecord.save()
-    return redirect("/alkatreszcsoport")   
-##############################################################
+    return redirect("/alkatreszcsoport")
+
+def deleteAlkatreszCsoportById(request, id): 
+    torlendoAlkatreszCsoport = Alkatreszcsoport.objects.get(pk = id)
+    torlendoAlkatreszCsoport.delete()
+    return redirect("/alkatreszcsoport")          
+############################################ BESZÁLLÍTÓ
 def beszallito(request):
     beszallitok =Beszallito.objects.all()
     context = {'beszallitok': beszallitok}
@@ -44,8 +49,13 @@ def addBeszallito(request):
     newBeszallito = request.POST["ujBeszallito"]
     newRecord = Beszallito(beszallito = newBeszallito)
     newRecord.save()
-    return redirect("/beszallito")   
-###############################################################
+    return redirect("/beszallito")
+
+def deleteBeszallitoById(request, id): 
+    torlendoBeszallito = Beszallito.objects.get(pk = id)
+    torlendoBeszallito.delete()
+    return redirect("/beszallito")             
+########################################### RENDSZÁM
 def rendszam(request):
     rendszamok = Rendszam.objects.all().order_by('rendszam')
     context = {'rendszamok':rendszamok}
@@ -57,6 +67,11 @@ def addRendszam(request):
     newRekord = Rendszam(rendszam = newRendszam, tulajdonos = newTulajdonos, lezart = False) # Ez így még csak teszt
     newRekord.save()
     return redirect("/rendszam")
+
+def deleteRendszamById(request, id): 
+    torlendoRendszam = Rendszam.objects.get(pk = id)
+    torlendoRendszam.delete()
+    return redirect("/rendszam")     
 ###########################################  ALKATRÉSZ 
 def alkatresz(request):
     alkatreszek = Alkatresz.objects.all().order_by('cikkszam')
@@ -103,19 +118,20 @@ def editAlkatreszById(request, alkatreszId): # ez a rész az AI segítségével 
         form = AlkatreszForm(instance=alkatresz)
     return render(request, 'edit_alkatresz.html', {'form': form})
 
-##############################################   Bevételi Bizonylat
+##########################   Bevételi Bizonylat
 
-def bebizonylat(request):
+def bebizonylat(request):    
     bebizonylatok = Bizonylat.objects.filter(bizonylattipus=True)
     beszallitok = Beszallito.objects.all()
     rendszamok = Rendszam.objects.all()
     context = {
         'bebizonylatok': bebizonylatok,
         'beszallitok': beszallitok,
-        'rendszamok': rendszamok
+        'rendszamok': rendszamok,
     }
     return render(request, 'bebizonylat.html', context)
 
+###########################
 def addBebizonylat(request):
     if request.method == "POST":
         newSzallito = request.POST["ujSzallito"]
@@ -124,8 +140,12 @@ def addBebizonylat(request):
         newSzallitolevelszam = request.POST["ujSzallitolevelszam"]
         newDatum = request.POST["ujDatum"]
 
+        alapadat = AlapAdat.objects.first()
+        if not alapadat:
+            raise ValueError("Nincs beállítva AlapAdat rekord!")
+
+        # 1. lépés: létrehozás genbizid nélkül
         newRekord = Bizonylat(
-            genbizid="2555",  # ezt itt még meg kell írnom !!!
             szallito=newSzallitoPeldany,
             bizonylattipus=True,
             szamlaszam=newSzamlaszam,
@@ -134,14 +154,18 @@ def addBebizonylat(request):
             lezart=False
         )
         newRekord.save()
-        return redirect("raktar:bebizonylat")
+        # 2. lépés: genbizid kiszámítása
+        kulonbseg = newRekord.id - alapadat.maxBizId        
+        genbizid =f"BE{alapadat.ev}_{kulonbseg:04d}" # mindig 4 számjegy, nullákkal feltöltve
+        newRekord.genbizid = genbizid
+        newRekord.save(update_fields=["genbizid"])
 
+        return redirect("raktar:bebizonylat")
 # Bevételi bizonylat törlése
 def deleteBebizonylat(request, biz_id):
     rekord = get_object_or_404(Bizonylat, id=biz_id, bizonylattipus=True)
     rekord.delete()
     return redirect("raktar:bebizonylat")
-
 
 ########################## KIVÉTELI BIZONYLATOK
 
@@ -158,18 +182,24 @@ def addKivbizonylat(request):
     if request.method == "POST":
         newRendszam = request.POST["ujRendszam"]
         newRendszamPeldany = Rendszam.objects.get(rendszam=newRendszam)
-        newSzallitolevelszam = request.POST["ujSzallitolevelszam"]
         newDatum = request.POST["ujDatum"]
 
-        newRekord = Bizonylat(
-            genbizid="3555",  # ezt MEG KELL ÍRNI MÉG
+        alapadat = AlapAdat.objects.first()
+        if not alapadat:
+            raise ValueError("Nincs beállítva AlapAdat rekord!")
+
+        newRekord = Bizonylat(            
             rendszam=newRendszamPeldany,
             bizonylattipus=False,
-            szallitolevelszam=newSzallitolevelszam,
             datum=newDatum,
             lezart=False
         )
-        newRekord.save()
+        newRekord.save()        
+        # 2. lépés: genbizid kiszámítása
+        kulonbseg = newRekord.id - alapadat.maxBizId        
+        genbizid =f"KI{alapadat.ev}_{kulonbseg:04d}" # mindig 4 számjegy, nullákkal feltöltve
+        newRekord.genbizid = genbizid
+        newRekord.save(update_fields=["genbizid"])
         return redirect("raktar:kivbizonylat")
 
 def deleteKivbizonylat(request, biz_id):

@@ -9,12 +9,13 @@
         {% csrf_token %}
         <p>Paraméterek:<br>
             <label>
-                Beszállító:
-                <select name="ujSzallito" id="ujSzallito">
+                Beszállító: <!-- A SELECT itt is DATALIST elemre cserélve -->
+                <input list="beszallitok" name="ujSzallito" id="ujSzallito">
+                <datalist id="beszallitok">
                     {% for item in beszallitok %}
                     <option value="{{ item.beszallito }}">{{ item.beszallito }}</option>
                     {% endfor %}
-                </select>
+                </datalist>
             </label><br>
 
             <label>
@@ -32,7 +33,7 @@
 </section>
 
 <section>
-    <h2>Bevételi Bizonylatok: </h2>
+    <h3>Bevételi Bizonylatok: </h3>
     <table border="1">
         <tr>
             <th>id</th>
