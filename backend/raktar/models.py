@@ -70,7 +70,7 @@ class Bizonylatsor(models.Model):
         unique_together = ("bizonylat", "alkatresz")
 
     def __str__(self):
-        return f"{self.bizonylat.gebizid} - {self.alkatresz.cikkszam}"
+        return f"{self.bizonylat.genbizid} - {self.alkatresz.cikkszam}"
     
 class AlapAdat(models.Model):
     ev = models.CharField(max_length=10, null=False)

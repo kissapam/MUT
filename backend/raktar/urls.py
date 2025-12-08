@@ -33,6 +33,7 @@ urlpatterns = [
     path("bebizonylat/", views.bebizonylat, name="bebizonylat"),
     path("bebizonylat/add/", views.addBebizonylat, name="addBebizonylat"),
     path("bebizonylat/delete/<int:biz_id>/", views.deleteBebizonylat, name="deleteBebizonylat"),
+    path("bebizonylat/<int:pk>/", views.bebizonylatsorok, name="bebizonylatsorok"),
     # Kivételi
     path("kivbizonylat/", views.kivbizonylat, name="kivbizonylat"),
     path("kivbizonylat/add/", views.addKivbizonylat, name="addKivbizonylat"),

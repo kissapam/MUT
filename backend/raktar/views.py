@@ -131,7 +131,6 @@ def bebizonylat(request):
     }
     return render(request, 'bebizonylat.html', context)
 
-###########################
 def addBebizonylat(request):
     if request.method == "POST":
         newSzallito = request.POST["ujSzallito"]
@@ -161,7 +160,13 @@ def addBebizonylat(request):
         newRekord.save(update_fields=["genbizid"])
 
         return redirect("raktar:bebizonylat")
-# Bevételi bizonylat törlése
+
+def bebizonylatsorok(request, pk):
+    aktualis_bizonylat = get_object_or_404(Bizonylat, pk=pk)
+    aktualisbiz_sorai = aktualis_bizonylat.sorok.all()   # a related_name miatt
+    return render(request,"bebizonylatsorok.html",{"bizonylat": aktualis_bizonylat, "sorok": aktualisbiz_sorai})
+    
+
 def deleteBebizonylat(request, biz_id):
     rekord = get_object_or_404(Bizonylat, id=biz_id, bizonylattipus=True)
     rekord.delete()
