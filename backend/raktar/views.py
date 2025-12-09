@@ -163,19 +163,29 @@ def addBebizonylat(request):
 
 def bebizonylatsorok(request, pk):
     aktualis_bizonylat = get_object_or_404(Bizonylat, pk=pk)
+    aktualis_alakterszek = Alkatresz.objects.all()
     aktualisbiz_sorai = aktualis_bizonylat.sorok.all()   # a related_name miatt
-    return render(request,"bebizonylatsorok.html",{"bizonylat": aktualis_bizonylat, "sorok": aktualisbiz_sorai})
+    osszeg = 0
+    for sor in aktualisbiz_sorai:
+        osszeg += sor.aktualisar * sor.mennyiseg
+    return render(request,"bebizonylatsorok.html",{"alkatreszek":aktualis_alakterszek,"bizonylat": aktualis_bizonylat, "sorok": aktualisbiz_sorai,"osszeg": f"{osszeg:,.0f} ft".replace(",", ".")})
 ## 
  
 def addBebizonylatsor(request):
-    newBizonylatId = 55 # nem bizonylat példány !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    newBizonylatId = request.POST["bizonylat_id"]
+    newBizonylatPeldany = Bizonylat.objects.get(id=newBizonylatId)
     newAlkatresz = request.POST["ujAlkatresz"]    
     newAlkatreszPeldany = Alkatresz.objects.get(cikkszam=newAlkatresz)
     newMennyiseg = request.POST["ujMennyiseg"]
     newAktualisar = request.POST["ujAktualisar"]    
-    newRecord = Bizonylatsor(bizonylat = newBizonylatId, alkatresz =newAlkatreszPeldany, mennyiseg = newMennyiseg, aktualisar = newAktualisar)
+    newRecord = Bizonylatsor(bizonylat = newBizonylatPeldany, alkatresz =newAlkatreszPeldany, mennyiseg = newMennyiseg, aktualisar = newAktualisar)
     newRecord.save()
-    return redirect("/beszallito")
+    newAlkatreszPeldany.keszlet += float(request.POST["ujMennyiseg"])
+    newAlkatreszPeldany.listaar = float(request.POST["ujAktualisar"])
+    newAlkatreszPeldany.save()
+     
+    
+    return redirect(request.META.get('HTTP_REFERER')) # ugyanarra az oldalra térek vissza ahonnan jött a request
     
     
 

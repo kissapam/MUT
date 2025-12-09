@@ -16,13 +16,14 @@
             <!-- Ide kell egy mini ürlap a bevételezendő alkatrészek adatainak bekérésére .-->
             <form action="{% url 'raktar:addBebizonylatsor' %}" method="post">
             {% csrf_token %}
+            <input type="hidden" name="bizonylat_id" value="{{ bizonylat.id }}">
             <p>Paraméterek:<br>
             <label>
                 Alkatrész: <!-- A SELECT itt is DATALIST elemre cserélve -->
                 <input list="alkatreszek" name="ujAlkatresz" id="ujAlkatresz">
                 <datalist id="alkatreszek">
                     {% for item in alkatreszek %}
-                    <option value="{{ item.alkatreszek }}">{{ item.alkatreszek }}</option>
+                    <option value="{{ item.cikkszam }}">{{ item.cikkszam}}</option>
                     {% endfor %}
                 </datalist>
             </label><br>
@@ -40,6 +41,7 @@
         </section>
     </div>
 <h3>Bizonylatsorok</h3>
+<h3>Osszeg: {{ osszeg }}</h3>
 <table border="1">
     <tr>
         <th>Termék</th>
