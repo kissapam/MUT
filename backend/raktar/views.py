@@ -165,6 +165,18 @@ def bebizonylatsorok(request, pk):
     aktualis_bizonylat = get_object_or_404(Bizonylat, pk=pk)
     aktualisbiz_sorai = aktualis_bizonylat.sorok.all()   # a related_name miatt
     return render(request,"bebizonylatsorok.html",{"bizonylat": aktualis_bizonylat, "sorok": aktualisbiz_sorai})
+## 
+ 
+def addBebizonylatsor(request):
+    newBizonylatId = 55 # nem bizonylat példány !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    newAlkatresz = request.POST["ujAlkatresz"]    
+    newAlkatreszPeldany = Alkatresz.objects.get(cikkszam=newAlkatresz)
+    newMennyiseg = request.POST["ujMennyiseg"]
+    newAktualisar = request.POST["ujAktualisar"]    
+    newRecord = Bizonylatsor(bizonylat = newBizonylatId, alkatresz =newAlkatreszPeldany, mennyiseg = newMennyiseg, aktualisar = newAktualisar)
+    newRecord.save()
+    return redirect("/beszallito")
+    
     
 
 def deleteBebizonylat(request, biz_id):

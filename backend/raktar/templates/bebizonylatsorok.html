@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}A Bizonylathoz tartozó tételek:{% endblock %}
+
+{% block content %}
+<h3>Bizonylat #{{ bizonylat.id }}</h3>
+<p>Szállító: {{ bizonylat.szallito }}</p>
+<p>Számlaszám: {{ bizonylat.szamlaszam }}</p>
+<p>Szállítólevél: {{ bizonylat.szallitolevelszam }}</p>
+<p>Dátum: {{ bizonylat.datum }}</p>
+<p>Lezárt: {{ bizonylat.lezart }}</p>  <!-- Késöbb nem kell megjeleníteni.-->
+  <!-- Ide kell egy mini ürlap a bevételezendő alkatrészek adatainak bekérésére .-->
+  <div class="container">
+        <section>
+            <h3>Tétel hozzáadása</h3>
+            <!-- Ide kell egy mini ürlap a bevételezendő alkatrészek adatainak bekérésére .-->
+            <form action="{% url 'raktar:addBebizonylatsor' %}" method="post">
+            {% csrf_token %}
+            <p>Paraméterek:<br>
+            <label>
+                Alkatrész: <!-- A SELECT itt is DATALIST elemre cserélve -->
+                <input list="alkatreszek" name="ujAlkatresz" id="ujAlkatresz">
+                <datalist id="alkatreszek">
+                    {% for item in alkatreszek %}
+                    <option value="{{ item.alkatreszek }}">{{ item.alkatreszek }}</option>
+                    {% endfor %}
+                </datalist>
+            </label><br>
+
+            <label>
+                Mennyiség: <input type="text" name="ujMennyiseg" id="ujMennyiseg">
+            </label><br>
+            <label>
+                Aktuális ár: <input type="text" name="ujAktualisar" id="ujAktualisar">
+            </label><br>            
+            <input type="submit" value="Új sor ?!. ">
+        </p>
+    </form>
+            <!-- Ide kell egy mini ürlap a bevételezendő alkatrészek adatainak bekérésére .-->
+        </section>
+    </div>
+<h3>Bizonylatsorok</h3>
+<table border="1">
+    <tr>
+        <th>Termék</th>
+        <th>Mennyiség</th>
+        <th>Ár</th>        
+    </tr>
+    {% for sor in sorok %}
+    <tr>
+        <td>{{ sor.alkatresz }}</td>
+        <td>{{ sor.mennyiseg }}</td>
+        <td>{{ sor.aktualisar }}</td>        
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Nincsenek sorok</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

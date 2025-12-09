@@ -35,10 +35,10 @@
                     <td>{{rendszam.tulajdonos}}</td>
                     <td>{{rendszam.lezart}}</td>
                     <td>  <!-- Elegáns megoldás egy mini ürlappal !-->
-                    <form method="post" action="{% url 'raktar:deleteRendszamById' rendszam.id %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
-                    </form>
+                        <form method="post" action="{% url 'raktar:deleteRendszamById' rendszam.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}
