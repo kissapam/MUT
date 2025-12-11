@@ -1,0 +1,173 @@
+.toolbar-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-excel {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-excel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+.btn-pdf {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-pdf:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    color: white;
+}
+
+.btn-refresh {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.table-section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.table thead th {
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+}
+
+.table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.table-total {
+    background: #f8f9fa;
+    font-size: 1.1rem;
+}
+
+.table-total td {
+    padding: 20px 15px;
+    border-top: 2px solid #667eea;
+}
+
+.cikkszam-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.csoport-badge {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+#emptyMessage {
+    display: none;
+}
+
+#emptyMessage i {
+    color: #ccc;
+}
+
+/* Fémes téma felülírások */
+.metallic .toolbar-section {
+    background: linear-gradient(145deg, #d5dbdb, #bdc3c7);
+}
+
+.metallic .btn-excel {
+    background: linear-gradient(145deg, #28a745, #20c997);
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-excel:hover {
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+}
+
+.metallic .btn-pdf {
+    background: linear-gradient(145deg, #dc3545, #c82333);
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-pdf:hover {
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+}
+
+.metallic .btn-refresh {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-refresh:hover {
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+}
+
+.metallic .table-section {
+    background: linear-gradient(145deg, #ecf0f1, #d5dbdb);
+}
+
+.metallic .table thead {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+}
+
+.metallic .table-total {
+    background: linear-gradient(145deg, #d5dbdb, #bdc3c7);
+}
+
+.metallic .table-total td {
+    border-top: 2px solid #34495e;
+}
+
+.metallic .cikkszam-badge {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.metallic .csoport-badge {
+    background: linear-gradient(145deg, #e67e22, #d35400);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}

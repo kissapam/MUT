@@ -1,0 +1,141 @@
+.form-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.table-section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.table thead th {
+    border: none;
+    padding: 15px;
+    font-weight: 600;
+}
+
+.table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    color: white;
+}
+
+.badge-open {
+    background: #28a745;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.badge-closed {
+    background: #dc3545;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+#emptyMessage {
+    display: none;
+}
+
+#emptyMessage i {
+    color: #ccc;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+/* Fémes téma felülírások */
+.metallic .form-section {
+    background: linear-gradient(145deg, #d5dbdb, #bdc3c7);
+}
+
+.metallic .btn-save {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    border: 1px solid #2c3e50;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-save:hover {
+    background: linear-gradient(145deg, #3d566e, #34495e);
+    box-shadow: 8px 8px 15px rgba(0,0,0,0.4);
+}
+
+.metallic .table-section {
+    background: linear-gradient(145deg, #ecf0f1, #d5dbdb);
+}
+
+.metallic .table thead {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+}
+
+.metallic .btn-delete {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-delete:hover {
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+}
+
+.metallic .form-control {
+    background: linear-gradient(145deg, #ffffff, #ecf0f1);
+    border: 1px solid #bdc3c7;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.metallic .form-control:focus {
+    background: #ffffff;
+    border-color: #7f8c8d;
+}

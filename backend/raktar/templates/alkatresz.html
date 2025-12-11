@@ -1,100 +1,143 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Alkatrészek karbantartása{% endblock %}
+{% block title %}Alkatrészek - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/alkatreszek.css' %}">
+{% endblock %}
 
 {% block content %}
-    <section>
-            <h3>Alkatrész hozzáadás:</h3>
-            <form action=" {% url 'raktar:addAlkatresz' %} " method="post">
-                {% csrf_token %}
-                <label>                    
-                        <label >
-                            Cikkszám: <input type="text" name="ujCikkszam" id="ujCikkszam">
-                        </label>
-                        <label>
-                            Leírás: <input type="text" name="ujLeiras" id="ujLeiras">
-                        </label><br>
-                        <label>
-                            Infó: <input type="text" name="ujInfo" id="ujInfo">
-                        </label><br>
-                        <!-- Mértékegység kiválasztása legördülő listával az adatbázisból-->
-                        <label>
-                            Mértékegység: 
-                            <select name="ujMertekegyseg" id="ujMertekegyseg">
-                                {% for item in mertekegysegek %}
-                                    <option value="{{item}}">{{item}}</option>
-                                {% endfor %}                                
-                            </select>                            
-                        </label>
-                        <label>
-                            Alkatrészcsoport: 
-                            <select name="ujAlkatreszCsoport" id="ujAlkatreszCsoport">
-                                {% for item in alkatreszcsoportok %}
-                                    <option value="{{item}}">{{item}}</option>
-                                {% endfor %}                                
-                            </select>
-                        </label>
-                        <label>
-                            Készlet: <input type="number" name="ujKeszlet" id="ujKeszlet">
-                        </label>
-                        <label>
-                            Listaár <input type="number" name="ujListaar" id="ujListaar">     
-                        </label><br>
-                        <input type="submit" value="Új Alkatrész">
-                    </p>
-                </label>
-            </form>
-    </section>
-    <!--  Ez felesleges és nem célravezető
-    <section>
-        <h2>Alkatrész törlése cikkszám alapján:</h2>
-        
-        <form action= " {% url 'raktar:deleteAlkatreszByCikkszam' %} " method="post">
-            {% csrf_token %}
-            <label>
-                <input type="text" name="alkatreszCikkszam" id="alkatreszCikkszam">
-                <input type="submit" value="Törlés">
-            </label>
-        </form>
-    </section>  -->
-    <section>
-    <h3>Alkatrészek: </h3>
-    <table>
-        <tr>
-           <th>Cikkszám</th>
-           <th>Leírás</th>
-           <th>Info</th>
-           <th>Mértékegység</th>
-           <th>Csoport</th>
-           <th>Készlet</th>
-           <th>Listaár</th>
-           <th>Törlés</th>
-           <th>Szerkesztés</th>
-        </tr>
-        {% for i in alkatreszek%}
-        <tr>
-            <td>{{i.cikkszam}}</td>
-            <td>{{i.leiras}}</td>
-            <td>{{i.info}}</td>
-            <td>{{i.mertekegyseg}}</td>
-            <td>{{i.alkatreszcsoport}}</td>
-            <td>{{i.keszlet}}</td>
-            <td>{{i.listaar}}</td>            
-            <!-- Elegánsabb megoldás egy mini ürlap !-->
-            <td>
-                <form method="post" action="{% url 'raktar:deleteAlkatreszById' i.id %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
-                </form>
-            </td>
-            <!-- Szerkesztés gomb ?-->
-            <td>
-                <a href="{% url 'raktar:editAlkatreszById' i.id %}" class="btn btn-primary btn-sm">
-                Szerkesztés</a>
-            </td>
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+         <!--<a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a> -->
+    </div>
+</header>
 
-        </tr>
-        {% endfor %}
-    </table>
-    </section>
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <h2><i class="fas fa-cog me-3"></i>Alkatrészek kezelése</h2>
+            
+            <div class="form-section">
+                <form method="POST" action="{% url 'raktar:addAlkatresz' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="ujCikkszam" class="form-label">Cikkszám:</label>
+                            <input type="text" class="form-control" id="ujCikkszam" name="ujCikkszam" placeholder="pl. AB-12345" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="ujMertekegyseg" class="form-label">Mértékegység:</label>
+                            <select class="form-select" id="ujMertekegyseg" name="ujMertekegyseg" required>
+                                <option value="">Válasszon...</option>
+                                {% for me in mertekegysegek %}
+                                <option value="{{ me.mertegys }}">{{ me.mertegys }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="ujAlkatreszCsoport" class="form-label">Alkatrész-csoport:</label>
+                            <select class="form-select" id="ujAlkatreszCsoport" name="ujAlkatreszCsoport" required>
+                                <option value="">Válasszon...</option>
+                                {% for cs in alkatreszcsoportok %}
+                                <option value="{{ cs.alkcsop }}">{{ cs.alkcsop }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label for="ujLeiras" class="form-label">Leírás:</label>
+                            <textarea class="form-control" id="ujLeiras" name="ujLeiras" rows="3" placeholder="Rövid leírás" required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ujInfo" class="form-label">További információ:</label>
+                            <textarea class="form-control" id="ujInfo" name="ujInfo" rows="3" placeholder="Kiegészítő információk"></textarea>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label for="ujKeszlet" class="form-label">Készlet:</label>
+                            <input type="number" step="0.01" class="form-control" id="ujKeszlet" name="ujKeszlet" value="0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ujListaar" class="form-label">Listaár (Ft):</label>
+                            <input type="number" class="form-control" id="ujListaar" name="ujListaar" value="0" required>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-save">
+                                <i class="fas fa-save me-2"></i>Mentés
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Alkatrészek listája</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Cikkszám</th>
+                                <th>Készlet</th>
+                                <th>Mértékegység</th>
+                                <th>Alkatrész-csoport</th>
+                                <th>Rövid leírás</th>
+                                <th>Listaár</th>
+                                <th>Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alkatresz in alkatreszek %}
+                            <tr>
+                                <td><span class="cikkszam-badge">{{ alkatresz.cikkszam }}</span></td>
+                                <td>
+                                    <span class="keszlet-badge {% if alkatresz.keszlet == 0 %}keszlet-empty{% elif alkatresz.keszlet < 10 %}keszlet-low{% endif %}">
+                                        {{ alkatresz.keszlet }}
+                                    </span>
+                                </td>
+                                <td>{{ alkatresz.mertekegyseg.mertegys }}</td>
+                                <td>{{ alkatresz.alkatreszcsoport.alkcsop }}</td>
+                                <td>{{ alkatresz.leiras|truncatechars:50 }}</td>
+                                <td>{{ alkatresz.listaar|floatformat:0 }} Ft</td>
+                                <td>
+                                    <a href="{% url 'raktar:editAlkatreszById' alkatresz.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="POST" action="{% url 'raktar:deleteAlkatreszById' alkatresz.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Biztosan törli?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Még nincs rögzített alkatrész.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/alkatreszek.js' %}"></script>
 {% endblock %}

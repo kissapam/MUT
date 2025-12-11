@@ -1,0 +1,11 @@
+/* Egyszerű kiegészítő témastílus.
+   Igény szerint bővíthető — jelenleg csak néhány finom effektus. */
+
+.info-card i {
+    filter: drop-shadow(0 2px 4px rgba(102,126,234,0.2));
+}
+
+.top-header {
+    /* Finom metallikus csillogás */
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.02) 100%), linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
