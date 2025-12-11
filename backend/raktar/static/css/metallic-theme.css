@@ -1,0 +1,191 @@
+/* Fémes téma felülírások */
+
+body {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%);
+    position: relative;
+}
+
+/*body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(149, 165, 166, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(127, 140, 141, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.login-card {
+    background: linear-gradient(145deg, #ecf0f1, #bdc3c7);
+    box-shadow: 
+        20px 20px 60px #95a5a6,
+        -20px -20px 60px #ffffff,
+        inset 0 1px 0 rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.3);
+}*/
+
+.login-header {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 50%, #34495e 100%);
+    position: relative;
+    box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+
+.header-logo {
+    filter: 
+        drop-shadow(0 5px 10px rgba(0,0,0,0.5))
+        brightness(1.2)
+        contrast(1.1);
+}
+
+.login-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(236, 240, 241, 0.5) 50%, 
+        transparent);
+}
+
+.login-header i {
+    color: #ecf0f1;
+    text-shadow: 
+        0 1px 0 rgba(255,255,255,0.3),
+        0 -1px 0 rgba(0,0,0,0.7);
+}
+
+.login-header h2 {
+    color: #ecf0f1;
+    text-shadow: 
+        0 2px 4px rgba(0,0,0,0.5),
+        0 1px 0 rgba(255,255,255,0.2);
+}
+
+.login-header p {
+    color: #bdc3c7;
+}
+
+.login-body {
+    background: linear-gradient(145deg, #ecf0f1, #d5dbdb);
+}
+
+.form-label {
+    color: #2c3e50;
+    font-weight: 600;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+
+.input-group-text {
+    background: linear-gradient(145deg, #95a5a6, #7f8c8d);
+    border: 1px solid #7f8c8d;
+    color: #ecf0f1;
+    box-shadow: 
+        inset 2px 2px 5px rgba(0,0,0,0.2),
+        inset -2px -2px 5px rgba(255,255,255,0.1);
+}
+
+.form-control {
+    background: linear-gradient(145deg, #ffffff, #ecf0f1);
+    border: 1px solid #bdc3c7;
+    color: #2c3e50;
+    box-shadow: 
+        inset 2px 2px 5px rgba(0,0,0,0.1),
+        inset -1px -1px 3px rgba(255,255,255,0.5);
+}
+
+.form-control:focus {
+    background: #ffffff;
+    border-color: #7f8c8d;
+    box-shadow: 
+        0 0 0 0.2rem rgba(127, 140, 141, 0.25),
+        inset 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.form-control::placeholder {
+    color: #95a5a6;
+}
+
+.btn-login {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    border: 1px solid #2c3e50;
+    color: #ecf0f1;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 
+        5px 5px 10px rgba(0,0,0,0.3),
+        -2px -2px 5px rgba(255,255,255,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.btn-login:hover {
+    background: linear-gradient(145deg, #3d566e, #34495e);
+    transform: translateY(-2px);
+    box-shadow: 
+        8px 8px 15px rgba(0,0,0,0.4),
+        -3px -3px 8px rgba(255,255,255,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    color: #ecf0f1;
+}
+
+.btn-login:active {
+    transform: translateY(0);
+    box-shadow: 
+        inset 3px 3px 8px rgba(0,0,0,0.4),
+        inset -1px -1px 3px rgba(255,255,255,0.1);
+}
+
+.form-check-input {
+    background: linear-gradient(145deg, #ecf0f1, #bdc3c7);
+    border: 2px solid #95a5a6;
+    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-check-input:checked {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    border-color: #2c3e50;
+    box-shadow: 
+        inset 2px 2px 5px rgba(0,0,0,0.3),
+        0 0 5px rgba(52, 73, 94, 0.5);
+}
+
+.forgot-password {
+    color: #34495e;
+    font-weight: 600;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+
+.forgot-password:hover {
+    color: #2c3e50;
+}
+
+.form-check-label {
+    color: #2c3e50;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+
+.alert-danger {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    border: 1px solid #c0392b;
+    color: #ecf0f1;
+    box-shadow: 
+        5px 5px 10px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.text-muted {
+    color: #7f8c8d !important;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.header-background-image {
+    opacity: 0.2;
+    filter: brightness(0.8) contrast(1.2);
+}

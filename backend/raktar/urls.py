@@ -1,43 +1,56 @@
-
 from django.urls import path
 from . import views
 
-app_name='raktar'
+app_name = 'raktar'
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    # Login - ez lesz a kezdőoldal
+    path('login/', views.login_view, name='login'),
+    
+    # Dashboard - csak bejelentkezés után
+    path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+
     # Mértékegység
     path('mertekegyseg/', views.mertekegyseg, name='mertekegyseg'),
-    path('addMertekegyseg/', views.addMertekegyseg, name='addMertekegyseg'), 
-    path('deleteMertekegyseg/<int:id>', views.deleteMertekegysegById, name='deleteMertekegysegById'),
-    # ALkatrészcsoport
+    path('mertekegyseg/add/', views.addMertekegyseg, name='addMertekegyseg'),
+    path('mertekegyseg/delete/<int:id>/', views.deleteMertekegysegById, name='deleteMertekegysegById'),
+
+    # Alkatrészcsoport
     path('alkatreszcsoport/', views.alkatreszcsoport, name='alkatreszcsoport'),
-    path('addAlkatreszCsoport/', views.addAlkatreszCsoport, name='addAlkatreszCsoport'),
-    path('deleteAlkatreszCsoport/<int:id>', views.deleteAlkatreszCsoportById, name='deleteAlkatreszCsoportById'),
+    path('alkatreszcsoport/add/', views.addAlkatreszCsoport, name='addAlkatreszCsoport'),
+    path('alkatreszcsoport/delete/<int:id>/', views.deleteAlkatreszCsoportById, name='deleteAlkatreszCsoportById'),
+
     # Beszállítók
     path('beszallito/', views.beszallito, name='beszallito'),
-    path('addBeszallito/', views.addBeszallito, name='addBeszallito'),
-    path('deleteBeszallito/<int:id>', views.deleteBeszallitoById, name='deleteBeszallitoById'),
+    path('beszallito/add/', views.addBeszallito, name='addBeszallito'),
+    path('beszallito/delete/<int:id>/', views.deleteBeszallitoById, name='deleteBeszallitoById'),
+
     # Rendszám
     path('rendszam/', views.rendszam, name='rendszam'),
-    path('addRendszam/', views.addRendszam, name='addRendszam'),
-    path('deleteRendszam/<int:id>', views.deleteRendszamById, name='deleteRendszamById'),
-    
+    path('rendszam/add/', views.addRendszam, name='addRendszam'),
+    path('rendszam/delete/<int:id>/', views.deleteRendszamById, name='deleteRendszamById'),
+
     # Alkatrész
-    path('alkatresz/', views.alkatresz, name='alkatresz'),    
-    path('addAlkatresz/', views.addAlkatresz, name='addAlkatresz'),
-    path('deleteAlkatresz/<int:alkatreszId>', views.deleteAlkatreszById, name='deleteAlkatreszById'),
-    path('deleteAlkatreszByCikkszam', views.deleteAlkatreszByCikkszam, name='deleteAlkatreszByCikkszam'),
-    path('editAlkatresz/<int:alkatreszId>', views.editAlkatreszById, name='editAlkatreszById'),
-    # Bevételi
-    path("bebizonylat/", views.bebizonylat, name="bebizonylat"),
-    path("bebizonylat/add/", views.addBebizonylat, name="addBebizonylat"),
-    path("bebizonylat/delete/<int:biz_id>/", views.deleteBebizonylat, name="deleteBebizonylat"),
-    path("bebizonylat/<int:pk>/", views.bebizonylatsorok, name="bebizonylatsorok"),
-    path("bebizonylatsor/", views.addBebizonylatsor, name="addBebizonylatsor"),
-    
-    # Kivételi
-    path("kivbizonylat/", views.kivbizonylat, name="kivbizonylat"),
-    path("kivbizonylat/add/", views.addKivbizonylat, name="addKivbizonylat"),
-    path("kivbizonylat/delete/<int:biz_id>/", views.deleteKivbizonylat, name="deleteKivbizonylat"),
+    path('alkatresz/', views.alkatresz, name='alkatresz'),
+    path('alkatresz/add/', views.addAlkatresz, name='addAlkatresz'),
+    path('alkatresz/delete/<int:alkatreszId>/', views.deleteAlkatreszById, name='deleteAlkatreszById'),
+    path('alkatresz/delete-by-cikkszam/', views.deleteAlkatreszByCikkszam, name='deleteAlkatreszByCikkszam'),
+    path('alkatresz/edit/<int:alkatreszId>/', views.editAlkatreszById, name='editAlkatreszById'),
+
+    # Bevételi bizonylat
+    path('bebizonylat/', views.bebizonylat, name='bebizonylat'),
+    path('bebizonylat/add/', views.addBebizonylat, name='addBebizonylat'),
+    path('bebizonylat/delete/<int:biz_id>/', views.deleteBebizonylat, name='deleteBebizonylat'),
+    path('bebizonylat/<int:pk>/', views.bebizonylatsorok, name='bebizonylatsorok'),
+    path('bebizonylatsor/add/', views.addBebizonylatsor, name='addBebizonylatsor'),
+
+    # Kivételi bizonylat
+    path('kivbizonylat/', views.kivbizonylat, name='kivbizonylat'),
+    path('kivbizonylat/add/', views.addKivbizonylat, name='addKivbizonylat'),
+    path('kivbizonylat/delete/<int:biz_id>/', views.deleteKivbizonylat, name='deleteKivbizonylat'),
+
+    # Leltár
+    path('leltar/', views.leltar, name='leltar'),
+
+   
 ]

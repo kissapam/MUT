@@ -1,0 +1,109 @@
+{% load static %}
+<!-- Bal oldali menü -->
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    <!-- Raktár menüpont -->
+    <div class="menu-item">
+      <a
+        href="#"
+        class="menu-link"
+        data-bs-toggle="collapse"
+        data-bs-target="#menuRaktar"
+      >
+        <i class="fas fa-warehouse me-2"></i>
+        <span>Raktár</span>
+        <i class="fas fa-chevron-down ms-auto"></i>
+      </a>
+      <div class="collapse show submenu" id="menuRaktar">
+        <a href="{% url 'raktar:kivbizonylat' %}" class="submenu-link">
+          <i class="fas fa-arrow-up me-2"></i>Kiadás
+        </a>
+        <a href="{% url 'raktar:bebizonylat' %}" class="submenu-link">
+          <i class="fas fa-arrow-down me-2"></i>Bevételezés
+        </a>
+      </div>
+    </div>
+
+    <!-- Karbantartás menüpont -->
+    <div class="menu-item">
+      <a
+        href="#"
+        class="menu-link"
+        data-bs-toggle="collapse"
+        data-bs-target="#menuKarbantartas"
+      >
+        <i class="fas fa-tools me-2"></i>
+        <span>Karbantartás</span>
+        <i class="fas fa-chevron-down ms-auto"></i>
+      </a>
+      <div class="collapse show submenu" id="menuKarbantartas">
+        <a href="{% url 'raktar:alkatresz' %}" class="submenu-link">
+          <i class="fas fa-cog me-2"></i>Alkatrészek
+        </a>
+        <a href="{% url 'raktar:beszallito' %}" class="submenu-link">
+          <i class="fas fa-truck me-2"></i>Beszállítók
+        </a>
+        <a href="{% url 'raktar:rendszam' %}" class="submenu-link">
+          <i class="fas fa-car me-2"></i>Gépjárművek
+        </a>
+        <a href="{% url 'raktar:mertekegyseg' %}" class="submenu-link">
+          <i class="fas fa-balance-scale me-2"></i>Mennyiség egységek
+        </a>
+        <a href="{% url 'raktar:alkatreszcsoport' %}" class="submenu-link">
+          <i class="fas fa-layer-group me-2"></i>Alkatrész csoportok
+        </a>
+        <a href="#" class="submenu-link">
+          <i class="fas fa-file-invoice me-2"></i>Bizonylatok listája
+        </a>
+      </div>
+    </div>
+
+    <!-- Lekérdezések menüpont -->
+    <div class="menu-item">
+      <a
+        href="#"
+        class="menu-link"
+        data-bs-toggle="collapse"
+        data-bs-target="#menuLekerdezes"
+      >
+        <i class="fas fa-search me-2"></i>
+        <span>Lekérdezések</span>
+        <i class="fas fa-chevron-down ms-auto"></i>
+      </a>
+      <div class="collapse show submenu" id="menuLekerdezes">
+        <a href="#" class="submenu-link">
+          <i class="fas fa-list me-2"></i>Kiadott alkatrészek
+        </a>
+        <a href="#" class="submenu-link">
+          <i class="fas fa-list-alt me-2"></i>Bevételezett alkatrészek
+        </a>
+        <a href="#" class="submenu-link">
+          <i class="fas fa-exchange-alt me-2"></i>Alkatrészmozgások
+        </a>
+      </div>
+    </div>
+
+    <!-- Leltár menüpont -->
+    <div class="menu-item">
+      <a href="{% url 'raktar:leltar' %}" class="submenu-link">
+        <i class="fas fa-clipboard-list me-2"></i>
+        <span>Leltár</span>
+      </a>
+    </div>
+
+    <!-- Kilépés menüpont -->
+    <div class="menu-item">
+      <form method="POST" action="{% url 'logout' %}" style="margin: 0">
+        {% csrf_token %}
+        <button
+          type="submit"
+          class="menu-link"
+          style="background: none; border: none; width: 100%; text-align: left"
+        >
+          <i class="fas fa-sign-out-alt me-2"></i>
+          <span>Kilépés</span>
+        </button>
+      </form>
+    </div>
+  </nav>
+</aside>

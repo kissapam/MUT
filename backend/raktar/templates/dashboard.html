@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Főoldal - Raktárkezelő{% endblock %}
+
+{% block content %}
+<!-- Felső sáv -->
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <!--<a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a> -->
+    </div>
+</header>
+
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <!-- Fő tartalom -->
+    <main class="content-area">
+        <div id="contentContainer">
+            <div class="welcome-section">
+                <h2><i class="fas fa-home me-3"></i>Üdvözöljük a Raktárkezelő Rendszerben!</h2>
+                <p class="lead">Válasszon egy menüpontot a bal oldali menüből a kezdéshez.</p>
+                
+                <div class="row mt-5">
+                    <div class="col-md-4 mb-4">
+                        <div class="info-card">
+                            <i class="fas fa-boxes fa-3x mb-3"></i>
+                            <h4>Raktár</h4>
+                            <p>Alkatrészek kiadása és bevételezése</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="info-card">
+                            <i class="fas fa-tools fa-3x mb-3"></i>
+                            <h4>Karbantartás</h4>
+                            <p>Alapadatok kezelése és karbantartása</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="info-card">
+                            <i class="fas fa-chart-line fa-3x mb-3"></i>
+                            <h4>Lekérdezések</h4>
+                            <p>Részletes riportok és kimutatások</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
