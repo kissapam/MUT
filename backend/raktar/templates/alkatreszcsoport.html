@@ -45,7 +45,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Egyedi azonosító</th>
+                                <!--<th>Egyedi azonosító</th>-->
                                 <th>Alkatrészcsoport</th>
                                 <th>Törlés</th>
                             </tr>
@@ -53,7 +53,7 @@
                         <tbody>
                             {% for csoport in alkatreszcsoportok %}
                             <tr>
-                                <td><strong>#{{ csoport.id }}</strong></td>
+                               <!--<th> <td><strong>#{{ csoport.id }}</strong></td>-->
                                 <td><span class="csoport-badge">{{ csoport.alkcsop }}</span></td>
                                 <td>
                                     <form method="POST" action="{% url 'raktar:deleteAlkatreszCsoportById' csoport.id %}" style="display: inline;">

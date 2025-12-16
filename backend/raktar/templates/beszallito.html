@@ -47,7 +47,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Egyedi azonosító</th>
+                               <!-- <th>Egyedi azonosító</th>-->
                                 <th>Beszállító neve</th>
                                 <th>Lezárt</th>
                                 <th>Törlés</th>
@@ -56,7 +56,7 @@
                         <tbody>
                             {% for beszallito in beszallitok %}
                             <tr>
-                                <td><strong>#{{ beszallito.id }}</strong></td>
+                               <!-- <td><strong>#{{ beszallito.id }}</strong></td>-->
                                 <td>{{ beszallito.beszallito }}</td>
                                 <td>
                                     <span class="badge {% if beszallito.lezart %}badge-closed{% else %}badge-open{% endif %}">

@@ -86,12 +86,12 @@
 }
 
 .rendszam-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;*/
     padding: 5px 15px;
     border-radius: 5px;
     font-weight: 600;
-    font-family: 'Courier New', monospace;
+    /*font-family: 'Courier New', monospace;*/
     letter-spacing: 1px;
 }
 
@@ -151,7 +151,7 @@
     border-color: #7f8c8d;
 }
 
-.metallic .rendszam-badge {
+/*.metallic .rendszam-badge {
     background: linear-gradient(145deg, #34495e, #2c3e50);
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-}
+}*/

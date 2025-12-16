@@ -1,61 +1,178 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}A Bizonylathoz tartozó tételek:{% endblock %}
+{% block title %}Bizonylat sorok - {{ bizonylat.genbizid }} - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bebizonylatsorok.css' %}">
+{% endblock %}
 
 {% block content %}
-<h3>Bizonylat #{{ bizonylat.id }}</h3>
-<p>Szállító: {{ bizonylat.szallito }}</p>
-<p>Számlaszám: {{ bizonylat.szamlaszam }}</p>
-<p>Szállítólevél: {{ bizonylat.szallitolevelszam }}</p>
-<p>Dátum: {{ bizonylat.datum }}</p>
-<p>Lezárt: {{ bizonylat.lezart }}</p>  <!-- Késöbb nem kell megjeleníteni.-->
-  <!-- Ide kell egy mini ürlap a bevételezendő alkatrészek adatainak bekérésére .-->
-  <div class="container">
-        <section>
-            <h3>Tétel hozzáadása</h3>
-            <!-- Ide kell egy mini ürlap a bevételezendő alkatrészek adatainak bekérésére .-->
-            <form action="{% url 'raktar:addBebizonylatsor' %}" method="post">
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <form method="POST" action="{% url 'logout' %}" style="display: inline; margin: 0;">
             {% csrf_token %}
-            <input type="hidden" name="bizonylat_id" value="{{ bizonylat.id }}">
-            <p>Paraméterek:<br>
-            <label>
-                Alkatrész: <!-- A SELECT itt is DATALIST elemre cserélve -->
-                <input list="alkatreszek" name="ujAlkatresz" id="ujAlkatresz">
-                <datalist id="alkatreszek">
-                    {% for item in alkatreszek %}
-                    <option value="{{ item.cikkszam }}">{{ item.cikkszam}}</option>
-                    {% endfor %}
-                </datalist>
-            </label><br>
-
-            <label>
-                Mennyiség: <input type="text" name="ujMennyiseg" id="ujMennyiseg">
-            </label><br>
-            <label>
-                Aktuális ár: <input type="text" name="ujAktualisar" id="ujAktualisar">
-            </label><br>            
-            <input type="submit" value="Új sor ?!. ">
-        </p>
-    </form>
-            <!-- Ide kell egy mini ürlap a bevételezendő alkatrészek adatainak bekérésére .-->
-        </section>
+            <!--<button type="submit" class="btn btn-logout" style="border: none; cursor: pointer; background: none; color: inherit; padding: 0.5rem 1rem;">
+                <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+            </button>-->
+        </form>
     </div>
-<h3>Bizonylatsorok</h3>
-<h3>Osszeg: {{ osszeg }}</h3>
-<table border="1">
-    <tr>
-        <th>Termék</th>
-        <th>Mennyiség</th>
-        <th>Ár</th>        
-    </tr>
-    {% for sor in sorok %}
-    <tr>
-        <td>{{ sor.alkatresz }}</td>
-        <td>{{ sor.mennyiseg }}</td>
-        <td>{{ sor.aktualisar }}</td>        
-    </tr>
-    {% empty %}
-    <tr><td colspan="4">Nincsenek sorok</td></tr>
-    {% endfor %}
-</table>
+</header>
+
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <h2><i class="fas fa-file-invoice me-3"></i>Bizonylat részletei: {{ bizonylat.genbizid }}</h2>
+
+            <!-- Bizonylat információk kártya -->
+            <div class="info-card">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-truck me-2"></i>Beszállító:</span>
+                            <span class="info-value">{{ bizonylat.szallito.beszallito }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-calendar me-2"></i>Dátum:</span>
+                            <span class="info-value">{{ bizonylat.datum|date:"Y. m. d." }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-file-invoice me-2"></i>Számlaszám:</span>
+                            <span class="info-value">{{ bizonylat.szamlaszam|default:"Nincs megadva" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-file-alt me-2"></i>Szállítólevél:</span>
+                            <span class="info-value">{{ bizonylat.szallitolevelszam|default:"Nincs megadva" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <span class="info-label"><i class="fas fa-lock me-2"></i>Állapot:</span>
+                            <span class="info-value">
+                                <span class="badge {% if bizonylat.lezart %}badge-closed{% else %}badge-open{% endif %}">
+                                    {% if bizonylat.lezart %}Lezárt{% else %}Aktív{% endif %}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tétel hozzáadása form -->
+            <div class="form-section">
+                <h4 class="mb-3"><i class="fas fa-plus-circle me-2"></i>Új tétel hozzáadása</h4>
+                <form method="POST" action="{% url 'raktar:addBebizonylatsor' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="bizonylat_id" value="{{ bizonylat.id }}">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="ujAlkatresz" class="form-label">Alkatrész:</label>
+                            <input list="alkatreszek" 
+                                   class="form-control" 
+                                   id="ujAlkatresz" 
+                                   name="ujAlkatresz" 
+                                   placeholder="Válasszon vagy írja be a cikkszámot"
+                                   required>
+                            <datalist id="alkatreszek">
+                                {% for item in alkatreszek %}
+                                    <option value="{{ item.cikkszam }}">{{ item.leiras }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="ujMennyiseg" class="form-label">Mennyiség:</label>
+                            <input type="number" 
+                                   step="0.01"
+                                   class="form-control" 
+                                   id="ujMennyiseg" 
+                                   name="ujMennyiseg" 
+                                   placeholder="pl. 10"
+                                   required>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="ujAktualisar" class="form-label">Aktuális ár (Ft):</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="ujAktualisar" 
+                                   name="ujAktualisar" 
+                                   placeholder="pl. 1500"
+                                   required>
+                        </div>
+                        
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-save w-100">
+                                <i class="fas fa-plus me-2"></i>Hozzáad
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Összeg kártya -->
+            <div class="summary-section">
+                <div class="summary-card">
+                    <h4>Bizonylat végösszege</h4>
+                    <div class="amount">{{ osszeg }}</div>
+                </div>
+            </div>
+
+            <!-- Bizonylatsorok táblázata -->
+            <div class="table-section">
+                <h4 class="mb-3">Bizonylat tételei</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Cikkszám</th>
+                                <th>Termék</th>
+                                <th class="text-end">Mennyiség</th>
+                                <th class="text-end">Egységár</th>
+                                <th class="text-end">Összeg</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sor in sorok %}
+                            <tr>
+                                <td><strong>{{ sor.alkatresz.cikkszam }}</strong></td>
+                                <td>{{ sor.alkatresz.leiras }}</td>
+                                <td class="text-end">{{ sor.mennyiseg }}</td>
+                                <td class="text-end">{{ sor.aktualisar|floatformat:0 }} Ft</td>
+                                <td class="text-end">
+                                    <strong>{% widthratio sor.mennyiseg 1 sor.aktualisar %} Ft</strong>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Még nincsenek tételek hozzáadva ehhez a bizonylathoz.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Vissza gomb -->
+            <div class="mt-4">
+                <a href="{% url 'raktar:bebizonylat' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Vissza a bizonylatokhoz
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
 {% endblock %}
