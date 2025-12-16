@@ -212,7 +212,7 @@ def editAlkatreszById(request, alkatreszId):
 ##########################   Bevételi Bizonylat
 @login_required
 def bebizonylat(request):    
-    bebizonylatok = Bizonylat.objects.filter(bizonylattipus=True)
+    bebizonylatok = Bizonylat.objects.filter(bizonylattipus=True, lezart=False)  # ← VÁLTOZÁS
     beszallitok = Beszallito.objects.all()
     rendszamok = Rendszam.objects.all()
     context = {
@@ -276,16 +276,61 @@ def bebizonylatsorok(request, pk):
     })
 
 @login_required
+# JAVÍTOTT addBebizonylatsor VIEW - Hibaüzenetekkel és validációval
+
+
 def addBebizonylatsor(request):
+    """Tétel hozzáadása bevételi bizonylathoz"""
     if request.method == "POST":
         try:
-            newBizonylatId = request.POST["bizonylat_id"]
-            newBizonylatPeldany = Bizonylat.objects.get(id=newBizonylatId)
-            newAlkatresz = request.POST["ujAlkatresz"]
-            newAlkatreszPeldany = Alkatresz.objects.get(cikkszam=newAlkatresz)
-            newMennyiseg = request.POST["ujMennyiseg"]
-            newAktualisar = request.POST["ujAktualisar"]
+            # Bizonylat ellenőrzése
+            newBizonylatId = request.POST.get("bizonylat_id")
+            if not newBizonylatId:
+                messages.error(request, "Hiányzik a bizonylat azonosító!")
+                return redirect(request.META.get('HTTP_REFERER', 'raktar:bebizonylat'))
             
+            newBizonylatPeldany = Bizonylat.objects.get(id=newBizonylatId)
+            
+            # Lezárt bizonylat ellenőrzése
+            if newBizonylatPeldany.lezart:
+                messages.error(request, f"A {newBizonylatPeldany.genbizid} bizonylat le van zárva! Nem lehet hozzá tételt rögzíteni.")
+                return redirect(request.META.get('HTTP_REFERER', 'raktar:bebizonylat'))
+            
+            # Alkatrész ellenőrzése
+            newAlkatresz = request.POST.get("ujAlkatresz")
+            if not newAlkatresz:
+                messages.error(request, "Kérem válasszon alkatrészt!")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            try:
+                newAlkatreszPeldany = Alkatresz.objects.get(cikkszam=newAlkatresz)
+            except Alkatresz.DoesNotExist:
+                messages.error(request, f"Nem található alkatrész ezzel a cikkszámmal: {newAlkatresz}")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            # Mennyiség és ár ellenőrzése
+            try:
+                newMennyiseg = float(request.POST.get("ujMennyiseg", 0))
+                newAktualisar = int(request.POST.get("ujAktualisar", 0))
+                
+                if newMennyiseg <= 0:
+                    messages.error(request, "A mennyiségnek pozitív számnak kell lennie!")
+                    return redirect(request.META.get('HTTP_REFERER'))
+                
+                if newAktualisar <= 0:
+                    messages.error(request, "Az árnak pozitív számnak kell lennie!")
+                    return redirect(request.META.get('HTTP_REFERER'))
+                    
+            except (ValueError, TypeError):
+                messages.error(request, "Hibás mennyiség vagy ár formátum!")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            # Ellenőrzés: Van már ilyen alkatrész ezen a bizonylaton?
+            if Bizonylatsor.objects.filter(bizonylat=newBizonylatPeldany, alkatresz=newAlkatreszPeldany).exists():
+                messages.error(request, f"A {newAlkatreszPeldany.cikkszam} alkatrész már szerepel ezen a bizonylaton!")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            # Tétel létrehozása
             newRecord = Bizonylatsor(
                 bizonylat=newBizonylatPeldany,
                 alkatresz=newAlkatreszPeldany,
@@ -294,12 +339,19 @@ def addBebizonylatsor(request):
             )
             newRecord.save()
             
-            # Készlet frissítése
-            newAlkatreszPeldany.keszlet += float(newMennyiseg)
-            newAlkatreszPeldany.listaar = float(newAktualisar)
+            # Készlet frissítése (bevételnél +)
+            newAlkatreszPeldany.keszlet += newMennyiseg
+            newAlkatreszPeldany.listaar = newAktualisar
             newAlkatreszPeldany.save()
             
-            messages.success(request, "Bizonylatsor sikeresen hozzáadva!")
+            # Sikeres üzenet
+            messages.success(
+                request,
+                f"Tétel sikeresen hozzáadva: {newAlkatreszPeldany.cikkszam} - {newMennyiseg} {newAlkatreszPeldany.mertekegyseg.mertegys}"
+            )
+            
+        except Bizonylat.DoesNotExist:
+            messages.error(request, "A bizonylat nem található!")
         except Exception as e:
             messages.error(request, f"Hiba történt: {str(e)}")
     
@@ -318,7 +370,7 @@ def deleteBebizonylat(request, biz_id):
 ########################## KIVÉTELI BIZONYLATOK
 @login_required
 def kivbizonylat(request):
-    kivbizonylatok = Bizonylat.objects.filter(bizonylattipus=False)
+    kivbizonylatok = Bizonylat.objects.filter(bizonylattipus=False, lezart=False)  # ← VÁLTOZÁS
     rendszamok = Rendszam.objects.all()
     context = {
         'kivbizonylatok': kivbizonylatok,
@@ -411,3 +463,58 @@ def logout_view(request):
     logout(request)
     messages.info(request, "Sikeresen kijelentkezett!")
     return redirect('raktar:login')
+
+
+# lezárás gombok kezelése a bizonylatoknál
+@login_required
+
+def lezarBebizonylat(request, biz_id):
+    """Bevételi bizonylat lezárása"""
+    if request.method == "POST":
+        try:
+            bizonylat = get_object_or_404(Bizonylat, id=biz_id, bizonylattipus=True)
+            bizonylat.lezart = True
+            bizonylat.save(update_fields=['lezart'])
+            messages.success(request, f"A {bizonylat.genbizid} bizonylat sikeresen lezárva!")
+        except Exception as e:
+            messages.error(request, f"Hiba történt a lezárás során: {str(e)}")
+    return redirect('raktar:bebizonylat')
+
+def lezarKivbizonylat(request, biz_id):
+    """Kivételi bizonylat lezárása"""
+    if request.method == "POST":
+        try:
+            bizonylat = get_object_or_404(Bizonylat, id=biz_id, bizonylattipus=False)
+            bizonylat.lezart = True
+            bizonylat.save(update_fields=['lezart'])
+            messages.success(request, f"A {bizonylat.genbizid} bizonylat sikeresen lezárva!")
+        except Exception as e:
+            messages.error(request, f"Hiba történt a lezárás során: {str(e)}")
+    return redirect('raktar:kivbizonylat')
+
+# HOZZÁADNI A views.py-hoz
+
+@login_required
+def lezart_bizonylatok(request):
+    """Lezárt bizonylatok listája"""
+    # Minden lezárt bizonylat (bevételi és kivételi is)
+    lezart_bizonylatok = Bizonylat.objects.filter(lezart=True).order_by('-datum')
+    
+    context = {
+        'lezart_bizonylatok': lezart_bizonylatok
+    }
+    return render(request, 'lezart_bizonylatok.html', context)
+
+@login_required
+def megnyit_bizonylat(request, biz_id):
+    """Lezárt bizonylat újranyitása (lezart = False)"""
+    if request.method == "POST":
+        try:
+            bizonylat = get_object_or_404(Bizonylat, id=biz_id, lezart=True)
+            bizonylat.lezart = False
+            bizonylat.save(update_fields=['lezart'])
+            messages.success(request, f"A {bizonylat.genbizid} bizonylat sikeresen újranyitva!")
+        except Exception as e:
+            messages.error(request, f"Hiba történt az újranyitás során: {str(e)}")
+    
+    return redirect('raktar:lezart_bizonylatok')

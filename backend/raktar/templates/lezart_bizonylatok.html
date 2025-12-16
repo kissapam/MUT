@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lezárt bizonylatok - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lezart_bizonylatok.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <!--<a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a>-->
+    </div>
+</header>
+
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <!-- ÜZENETEK MEGJELENÍTÉSE -->
+            {% if messages %}
+                <div class="messages-container mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle me-2"></i>
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% elif message.tags == 'info' %}
+                                <i class="fas fa-info-circle me-2"></i>
+                            {% endif %}
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h2><i class="fas fa-archive me-3"></i>Bizonylatok listája (Lezárt)</h2>
+
+            <!-- Statisztika kártyák 
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card stat-total">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ lezart_bizonylatok|length }}</h3>
+                            <p>Összes lezárt bizonylat</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-bevetel">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ lezart_bizonylatok|dictsort:"bizonylattipus"|slice:":"|length }}</h3>
+                            <p>Lezárt bevételi bizonylatok</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card stat-kivetel">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>{{ lezart_bizonylatok|length|add:"-"|add:lezart_bizonylatok|dictsort:"bizonylattipus"|slice:":"|length }}</h3>
+                            <p>Lezárt kivételi bizonylatok</p>
+                        </div>
+                    </div>
+                </div>
+            </div>-->
+
+            <!-- Bizonylatok táblázata -->
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Lezárt bizonylatok listája</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Típus</th>
+                                <th>Bizonylat száma</th>
+                                <th>Rendszám</th>
+                                <th>Beszállító</th>
+                                <th>Dátum</th>
+                                <th>Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bizonylat in lezart_bizonylatok %}
+                            <tr>
+                                <td>
+                                    {% if bizonylat.bizonylattipus %}
+                                        <span class="tipusbadge tipusbadge-bevetel">
+                                            <i class="fas fa-arrow-down me-1"></i>Bevétel
+                                        </span>
+                                    {% else %}
+                                        <span class="tipusbadge tipusbadge-kivetel">
+                                            <i class="fas fa-arrow-up me-1"></i>Kiadás
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="bizonylat-badge">{{ bizonylat.genbizid }}</span>
+                                </td>
+                                <td>
+                                    {% if bizonylat.rendszam %}
+                                        <span class="rendszam-badge">{{ bizonylat.rendszam.rendszam }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if bizonylat.szallito %}
+                                        {{ bizonylat.szallito.beszallito }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ bizonylat.datum|date:"Y-m-d" }}</td>
+                                <td>
+                                    <form method="POST" action="{% url 'raktar:megnyit_bizonylat' bizonylat.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                class="btn btn-reopen" 
+                                                onclick="return confirm('Biztosan újranyitja a {{ bizonylat.genbizid }} bizonylatot?')"
+                                                title="Bizonylat újranyitása">
+                                            <i class="fas fa-unlock me-1"></i>Újranyitás
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Még nincs lezárt bizonylat.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+{% endblock %}

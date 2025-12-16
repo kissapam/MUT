@@ -45,7 +45,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Egyedi azonosító</th>
+                               <!-- <th>Egyedi azonosító</th>-->
                                 <th>Mértékegység</th>
                                 <th>Törlés</th>
                             </tr>
@@ -53,7 +53,7 @@
                         <tbody>
                             {% for mertekegyseg in mertekegysegek %}
                             <tr>
-                                <td><strong>#{{ mertekegyseg.id }}</strong></td>
+                                <!--<td><strong>#{{ mertekegyseg.id }}</strong></td>-->
                                 <td><span class="mertekegyseg-badge">{{ mertekegyseg.mertegys }}</span></td>
                                 <td>
                                     <form method="POST" action="{% url 'raktar:deleteMertekegysegById' mertekegyseg.id %}" style="display: inline;">

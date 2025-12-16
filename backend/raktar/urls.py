@@ -43,14 +43,25 @@ urlpatterns = [
     path('bebizonylat/delete/<int:biz_id>/', views.deleteBebizonylat, name='deleteBebizonylat'),
     path('bebizonylat/<int:pk>/', views.bebizonylatsorok, name='bebizonylatsorok'),
     path('bebizonylatsor/add/', views.addBebizonylatsor, name='addBebizonylatsor'),
+    # Bevételi bizonylat lezárása
+    path('bebizonylat/lezar/<int:biz_id>/', views.lezarBebizonylat, name='lezarBebizonylat'),
 
     # Kivételi bizonylat
     path('kivbizonylat/', views.kivbizonylat, name='kivbizonylat'),
     path('kivbizonylat/add/', views.addKivbizonylat, name='addKivbizonylat'),
     path('kivbizonylat/delete/<int:biz_id>/', views.deleteKivbizonylat, name='deleteKivbizonylat'),
+    # Kivételi bizonylat lezárása
+    path('kivbizonylat/lezar/<int:biz_id>/', views.lezarKivbizonylat, name='lezarKivbizonylat'),
 
     # Leltár
     path('leltar/', views.leltar, name='leltar'),
+
+    # Lezárt bizonylatok
+    path('lezart-bizonylatok/', views.lezart_bizonylatok, name='lezart_bizonylatok'),
+    path('bizonylat/megnyit/<int:biz_id>/', views.megnyit_bizonylat, name='megnyit_bizonylat'),
+    
+    
+
 
    
 ]

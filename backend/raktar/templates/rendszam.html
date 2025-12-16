@@ -51,7 +51,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Egyedi azonosító</th>
+                                <!--<th>Egyedi azonosító</th>-->
                                 <th>Gépkocsi rendszáma</th>
                                 <th>Tulajdonos</th>
                                 <th>Lezárt</th>
@@ -61,7 +61,7 @@
                         <tbody>
                             {% for rendszam in rendszamok %}
                             <tr>
-                                <td><strong>#{{ rendszam.id }}</strong></td>
+                                <!--<td><strong>#{{ rendszam.id }}</strong></td>-->
                                 <td><span class="rendszam-badge">{{ rendszam.rendszam }}</span></td>
                                 <td>{{ rendszam.tulajdonos }}</td>
                                 <td>
