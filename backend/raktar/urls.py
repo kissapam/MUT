@@ -64,4 +64,10 @@ urlpatterns = [
 
 
    
+    
+    # Lekérdezések
+    path("lekerdezes_ki/", views.lekerdezes_ki, name="lekerdezes_ki"),
+    path("lekerdezes_be/", views.lekerdezes_be, name="lekerdezes_be"),
+    path("lekerdezes_ossz/", views.lekerdezes_ossz, name="lekerdezes_ossz"),
+    
 ]

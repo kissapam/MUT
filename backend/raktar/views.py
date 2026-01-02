@@ -421,6 +421,116 @@ def deleteKivbizonylat(request, biz_id):
         messages.error(request, f"Hiba történt a törlés során: {str(e)}")
     return redirect("raktar:kivbizonylat")
 
+########################## LEKÉRDEZÉSEK  
+def lekerdezes_ki(request):
+    rendszamok = Rendszam.objects.all()
+    sorok = None
+    kivalasztott = None
+    kivalasztott_cikk = None
+
+    if request.method == "POST":
+        kivalasztott = request.POST.get("keresettRendszam")
+        kivalasztott_cikk = request.POST.get("keresettCikkszam")
+
+        # minden kiadási bizonylat listázása:
+        sorok = Bizonylatsor.objects.filter(bizonylat__bizonylattipus=False)
+
+        # ha van rendszám → szűrés
+        if kivalasztott:
+            sorok = sorok.filter(
+                bizonylat__rendszam__rendszam=kivalasztott
+            )
+
+        # ha van cikkszám részlet → LIKE szűrés
+        if kivalasztott_cikk:
+            sorok = sorok.filter(
+                alkatresz__cikkszam__icontains=kivalasztott_cikk
+            )
+
+        sorok = sorok.select_related("bizonylat", "alkatresz") \
+                     .order_by("-bizonylat__datum")
+
+    return render(request, 'lekerdezes_ki.html', {
+        'rendszamok': rendszamok,
+        'sorok': sorok,
+        'kivalasztott': kivalasztott,
+        'kivalasztott_cikk': kivalasztott_cikk,
+    })
+
+
+def lekerdezes_be(request):
+    beszallitok = Beszallito.objects.all()
+    sorok = None
+    kivalasztott = None
+    kivalasztott_cikk = None
+
+    if request.method == "POST":
+        kivalasztott = request.POST.get("keresettBeszallito")
+        kivalasztott_cikk = request.POST.get("keresettCikkszam")
+
+        # induló queryset: csak BEVÉTELEZETT bizonylatok sorai
+        sorok = Bizonylatsor.objects.filter(bizonylat__bizonylattipus=True)
+        
+        
+        # ha van beszállító megadva:
+        if kivalasztott:
+            sorok = sorok.filter(
+                bizonylat__szallito__beszallito=kivalasztott
+            )
+
+
+        # ha van cikkszám részlet → LIKE szűrés
+        if kivalasztott_cikk:
+            sorok = sorok.filter(
+                alkatresz__cikkszam__icontains=kivalasztott_cikk
+            )
+
+        # optimalizálás + rendezés
+        sorok = (
+            sorok
+            .select_related("bizonylat", "bizonylat__szallito", "alkatresz")
+            .order_by("-bizonylat__datum")
+        )
+
+    return render(request, 'lekerdezes_be.html', {
+        'beszallitok': beszallitok,
+        'sorok': sorok,
+        'kivalasztott_cikk': kivalasztott_cikk,
+    })
+
+def lekerdezes_ossz(request):
+    sorok = None
+    keresett_cikk = None
+
+    if request.method == "POST":
+        keresett_cikk = request.POST.get("keresettCikkszam")
+
+        # induló queryset: minden bizonylatsor
+        sorok = Bizonylatsor.objects.all()
+        
+        # ha van cikkszám részlet → LIKE szűrés
+        if keresett_cikk:
+            sorok = sorok.filter(
+                alkatresz__cikkszam__icontains=keresett_cikk
+            )
+
+        # optimalizálás + rendezés
+        sorok = (
+            sorok
+            .select_related(
+                "bizonylat",
+                "bizonylat__szallito",
+                "bizonylat__rendszam",
+                "alkatresz"
+            )
+            .order_by("-bizonylat__datum")
+        )
+
+    return render(request, 'lekerdezes_ossz.html', {
+        'sorok': sorok,
+        'keresett_cikk': keresett_cikk,
+    })
+
 ########################## LOGIN/LOGOUT
 def login_view(request):
     if request.method == "POST":
