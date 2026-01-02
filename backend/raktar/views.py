@@ -743,7 +743,6 @@ def megnyit_bizonylat(request, biz_id):
 def export_bizonylat_csv(request, biz_id):
     biz = get_object_or_404(Bizonylat, id=biz_id)
 
-    # HTTP válasz CSV-ként
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = (
         f'attachment; filename="bizonylat_{biz.genbizid}.csv"'
@@ -751,43 +750,25 @@ def export_bizonylat_csv(request, biz_id):
 
     writer = csv.writer(response, delimiter=';')
 
-    # Fejléc információk
-    writer.writerow([f"Bizonylat: {biz.genbizid}"])
-    writer.writerow([f"Dátum: {biz.datum}"])
-    writer.writerow([f"Szállító: {biz.szallito}"])
-    writer.writerow([])
-
-    # Táblázat fejléce
-    writer.writerow([
-        "Cikkszám",
-        "Megnevezés",
-        "Mennyiség",
-        "Egységár (Ft)",
-        "Összesen (Ft)"
-    ])
-
-    # Sorok bejárása
+    # Csak a sorok, fejléc nélkül
     for sor in biz.sorok.all():
         writer.writerow([
-            sor.alkatresz.cikkszam,
-            sor.alkatresz.leiras,
-            sor.mennyiseg,
-            sor.aktualisar,
-            sor.mennyiseg * sor.aktualisar
+            sor.id,                               # Bizonylatsor ID
+            sor.alkatresz.cikkszam,               # Cikkszám
+            sor.alkatresz.leiras,                 # Megnevezés
+            sor.mennyiseg,                        # Mennyiség
+            sor.aktualisar,                       # Egységár
+            sor.mennyiseg * sor.aktualisar        # Összesen
         ])
 
     return response
 
-
 ############################################# EXPORTÁLÁS PDF    
-
 @login_required
 def export_bizonylat_pdf(request, biz_id):
     biz = get_object_or_404(Bizonylat, id=biz_id)
 
     buffer = BytesIO()
-
-    # PDF dokumentum
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
 
@@ -795,37 +776,60 @@ def export_bizonylat_pdf(request, biz_id):
     title_style = styles["Heading1"]
     normal_style = styles["Normal"]
 
-    # Fejléc
-    elements.append(Paragraph(f"Bizonylat: {biz.genbizid}", title_style))
+    # --- Fejléc típustól függően ---
+    biz_tipus_szoveg = "Bevételi bizonylat" if biz.bizonylattipus else "Kiadási bizonylat"
+
+    elements.append(Paragraph(f"{biz_tipus_szoveg}: {biz.genbizid}", title_style))
     elements.append(Paragraph(f"Dátum: {biz.datum}", normal_style))
-    elements.append(Paragraph(f"Szállító: {biz.szallito}", normal_style))
+
+    if biz.bizonylattipus:
+        # Bevételi bizonylat
+        elements.append(Paragraph(f"Szállító: {biz.szallito}", normal_style))
+
+        if biz.szamlaszam:
+            elements.append(Paragraph(f"Számlaszám: {biz.szamlaszam}", normal_style))
+
+        if biz.szallitolevelszam:
+            elements.append(Paragraph(f"Szállítólevél száma: {biz.szallitolevelszam}", normal_style))
+
+    else:
+        # Kiadási bizonylat
+        elements.append(Paragraph(f"Rendszám: {biz.rendszam}", normal_style))
+
     elements.append(Spacer(1, 12))
 
-    # Táblázat fejléce
+    # --- Táblázat fejléce ---
     data = [
         ["Cikkszám", "Megnevezés", "Mennyiség", "Egységár (Ft)", "Összesen (Ft)"]
     ]
 
-    # Sorok hozzáadása
+    total_sum = 0
+
+    # --- Sorok hozzáadása ---
     for sor in biz.sorok.all():
+        osszesen = sor.mennyiseg * sor.aktualisar
+        total_sum += osszesen
+
         data.append([
             sor.alkatresz.cikkszam,
             sor.alkatresz.leiras,
             sor.mennyiseg,
             sor.aktualisar,
-            sor.mennyiseg * sor.aktualisar
+            osszesen
         ])
 
-    # Táblázat létrehozása
+    # --- Összesítő sor ---
+    data.append(["", "", "", "Összesen:", total_sum])
+
+    # --- Táblázat létrehozása ---
     table = Table(data, colWidths=[70, 180, 60, 80, 80])
 
-    # Táblázat stílus
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
 
-        ('ALIGN', (2, 1), (-1, -1), 'RIGHT'),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('ALIGN', (2, 1), (-1, -1), 'RIGHT'),
 
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
@@ -834,17 +838,37 @@ def export_bizonylat_pdf(request, biz_id):
         ('TOPPADDING', (0, 0), (-1, 0), 8),
 
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+
+        # Összesítő sor kiemelése
+        ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+        ('BACKGROUND', (0, -1), (-1, -1), colors.whitesmoke),
     ]))
 
     elements.append(table)
 
-    # PDF összeállítása
-    doc.build(elements)
+    # --- Aláírási mező ---
+    elements.append(Spacer(1, 24))
 
+    signature_data = [
+        ["Kiállította:", "______________________________"],
+    ]
+
+    signature_table = Table(signature_data, colWidths=[120, 250])
+
+    signature_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTSIZE', (0, 0), (-1, -1), 11),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+    ]))
+
+    elements.append(signature_table)
+
+    # --- PDF összeállítása ---
+    doc.build(elements)
     buffer.seek(0)
+
     return HttpResponse(
         buffer,
         content_type='application/pdf',
         headers={'Content-Disposition': f'attachment; filename="bizonylat_{biz.genbizid}.pdf"'}
     )
-
