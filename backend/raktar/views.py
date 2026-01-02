@@ -8,6 +8,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import Http404
 from .forms import AlkatreszForm
+### Importok a fájl exportáláshoz  (pdf és csv)  
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.pdfgen import canvas
+from io import BytesIO
+import csv
 
 ############################################ MENU 
 def home(request):
@@ -261,7 +269,7 @@ def addBebizonylat(request):
     return redirect("raktar:bebizonylat")
 
 @login_required
-def bebizonylatsorok(request, pk):
+def beBizonylatsorok(request, pk):
     aktualis_bizonylat = get_object_or_404(Bizonylat, pk=pk)
     aktualis_alakterszek = Alkatresz.objects.all()
     aktualisbiz_sorai = aktualis_bizonylat.sorok.all()
@@ -411,6 +419,106 @@ def addKivbizonylat(request):
     
     return redirect("raktar:kivbizonylat")
 
+
+def addKivbizonylatsor(request):
+    """Tétel hozzáadása kivételi bizonylathoz"""
+    if request.method == "POST":
+        try:
+            # Bizonylat ellenőrzése
+            newBizonylatId = request.POST.get("bizonylat_id")
+            if not newBizonylatId:
+                messages.error(request, "Hiányzik a bizonylat azonosító!")
+                return redirect(request.META.get('HTTP_REFERER', 'raktar:bebizonylat'))
+            
+            newBizonylatPeldany = Bizonylat.objects.get(id=newBizonylatId)
+            
+            # Lezárt bizonylat ellenőrzése
+            if newBizonylatPeldany.lezart:
+                messages.error(request, f"A {newBizonylatPeldany.genbizid} bizonylat le van zárva! Nem lehet hozzá tételt rögzíteni.")
+                return redirect(request.META.get('HTTP_REFERER', 'raktar:bebizonylat'))
+            
+            # Alkatrész ellenőrzése
+            newAlkatresz = request.POST.get("ujAlkatresz")
+            if not newAlkatresz:
+                messages.error(request, "Kérem válasszon alkatrészt!")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            try:
+                newAlkatreszPeldany = Alkatresz.objects.get(cikkszam=newAlkatresz)
+            except Alkatresz.DoesNotExist:
+                messages.error(request, f"Nem található alkatrész ezzel a cikkszámmal: {newAlkatresz}")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            # Mennyiség és ár ellenőrzése
+            try:
+                newMennyiseg = float(request.POST.get("ujMennyiseg", 0))
+                newAktualisar = int(request.POST.get("ujAktualisar", 0))
+                
+                if newMennyiseg <= 0:
+                    messages.error(request, "A mennyiségnek pozitív számnak kell lennie!")
+                    return redirect(request.META.get('HTTP_REFERER'))
+                
+                if newAktualisar <= 0:
+                    messages.error(request, "Az árnak pozitív számnak kell lennie!")
+                    return redirect(request.META.get('HTTP_REFERER'))
+                    
+            except (ValueError, TypeError):
+                messages.error(request, "Hibás mennyiség vagy ár formátum!")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            # Ellenőrzés: Van már ilyen alkatrész ezen a bizonylaton?
+            if Bizonylatsor.objects.filter(bizonylat=newBizonylatPeldany, alkatresz=newAlkatreszPeldany).exists():
+                messages.error(request, f"A {newAlkatreszPeldany.cikkszam} alkatrész már szerepel ezen a bizonylaton!")
+                return redirect(request.META.get('HTTP_REFERER'))
+            
+            # Tétel létrehozása
+            newRecord = Bizonylatsor(
+                bizonylat=newBizonylatPeldany,
+                alkatresz=newAlkatreszPeldany,
+                mennyiseg=newMennyiseg,
+                aktualisar=newAktualisar
+            )
+            newRecord.save()
+            
+            # Készlet frissítése (kivételnél -)
+            newAlkatreszPeldany.keszlet -= newMennyiseg
+            newAlkatreszPeldany.listaar = newAktualisar
+            newAlkatreszPeldany.save()
+            
+            # Sikeres üzenet
+            messages.success(
+                request,
+                f"Tétel sikeresen hozzáadva: {newAlkatreszPeldany.cikkszam} - {newMennyiseg} {newAlkatreszPeldany.mertekegyseg.mertegys}"
+            )
+            
+        except Bizonylat.DoesNotExist:
+            messages.error(request, "A bizonylat nem található!")
+        except Exception as e:
+            messages.error(request, f"Hiba történt: {str(e)}")
+    
+    return redirect(request.META.get('HTTP_REFERER', 'raktar:bebizonylat'))
+
+
+
+
+@login_required
+def kivBizonylatsorok(request, pk):
+    aktualis_bizonylat = get_object_or_404(Bizonylat, pk=pk)
+    aktualis_alakterszek = Alkatresz.objects.all()
+    aktualisbiz_sorai = aktualis_bizonylat.sorok.all()
+    osszeg = 0
+    for sor in aktualisbiz_sorai:
+        osszeg += sor.aktualisar * sor.mennyiseg
+    return render(request, "kivbizonylatsorok.html", {
+        "alkatreszek": aktualis_alakterszek,
+        "bizonylat": aktualis_bizonylat,
+        "sorok": aktualisbiz_sorai,
+        "osszeg": f"{osszeg:,.0f} ft".replace(",", ".")
+    })
+
+
+
+
 @login_required
 def deleteKivbizonylat(request, biz_id):
     try:
@@ -518,3 +626,115 @@ def megnyit_bizonylat(request, biz_id):
             messages.error(request, f"Hiba történt az újranyitás során: {str(e)}")
     
     return redirect('raktar:lezart_bizonylatok')
+
+############################################# EXPORTÁLÁS CSV
+
+@login_required
+def export_bizonylat_csv(request, biz_id):
+    biz = get_object_or_404(Bizonylat, id=biz_id)
+
+    # HTTP válasz CSV-ként
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = (
+        f'attachment; filename="bizonylat_{biz.genbizid}.csv"'
+    )
+
+    writer = csv.writer(response, delimiter=';')
+
+    # Fejléc információk
+    writer.writerow([f"Bizonylat: {biz.genbizid}"])
+    writer.writerow([f"Dátum: {biz.datum}"])
+    writer.writerow([f"Szállító: {biz.szallito}"])
+    writer.writerow([])
+
+    # Táblázat fejléce
+    writer.writerow([
+        "Cikkszám",
+        "Megnevezés",
+        "Mennyiség",
+        "Egységár (Ft)",
+        "Összesen (Ft)"
+    ])
+
+    # Sorok bejárása
+    for sor in biz.sorok.all():
+        writer.writerow([
+            sor.alkatresz.cikkszam,
+            sor.alkatresz.leiras,
+            sor.mennyiseg,
+            sor.aktualisar,
+            sor.mennyiseg * sor.aktualisar
+        ])
+
+    return response
+
+
+############################################# EXPORTÁLÁS PDF    
+
+@login_required
+def export_bizonylat_pdf(request, biz_id):
+    biz = get_object_or_404(Bizonylat, id=biz_id)
+
+    buffer = BytesIO()
+
+    # PDF dokumentum
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+
+    styles = getSampleStyleSheet()
+    title_style = styles["Heading1"]
+    normal_style = styles["Normal"]
+
+    # Fejléc
+    elements.append(Paragraph(f"Bizonylat: {biz.genbizid}", title_style))
+    elements.append(Paragraph(f"Dátum: {biz.datum}", normal_style))
+    elements.append(Paragraph(f"Szállító: {biz.szallito}", normal_style))
+    elements.append(Spacer(1, 12))
+
+    # Táblázat fejléce
+    data = [
+        ["Cikkszám", "Megnevezés", "Mennyiség", "Egységár (Ft)", "Összesen (Ft)"]
+    ]
+
+    # Sorok hozzáadása
+    for sor in biz.sorok.all():
+        data.append([
+            sor.alkatresz.cikkszam,
+            sor.alkatresz.leiras,
+            sor.mennyiseg,
+            sor.aktualisar,
+            sor.mennyiseg * sor.aktualisar
+        ])
+
+    # Táblázat létrehozása
+    table = Table(data, colWidths=[70, 180, 60, 80, 80])
+
+    # Táblázat stílus
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+
+        ('ALIGN', (2, 1), (-1, -1), 'RIGHT'),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+        ('TOPPADDING', (0, 0), (-1, 0), 8),
+
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+    ]))
+
+    elements.append(table)
+
+    # PDF összeállítása
+    doc.build(elements)
+
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'attachment; filename="bizonylat_{biz.genbizid}.pdf"'}
+    )
+

@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+<header class="top-header">
     <div class="header-right">
         <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
         <!--<a href="{% url 'logout' %}" class="btn btn-logout">
@@ -44,43 +44,6 @@
             {% endif %}
 
             <h2><i class="fas fa-archive me-3"></i>Bizonylatok listája (Lezárt)</h2>
-
-            <!-- Statisztika kártyák 
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <div class="stat-card stat-total">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>{{ lezart_bizonylatok|length }}</h3>
-                            <p>Összes lezárt bizonylat</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card stat-bevetel">
-                        <div class="stat-icon">
-                            <i class="fas fa-arrow-down"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>{{ lezart_bizonylatok|dictsort:"bizonylattipus"|slice:":"|length }}</h3>
-                            <p>Lezárt bevételi bizonylatok</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-card stat-kivetel">
-                        <div class="stat-icon">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>{{ lezart_bizonylatok|length|add:"-"|add:lezart_bizonylatok|dictsort:"bizonylattipus"|slice:":"|length }}</h3>
-                            <p>Lezárt kivételi bizonylatok</p>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
 
             <!-- Bizonylatok táblázata -->
             <div class="table-section mt-4">
@@ -128,7 +91,13 @@
                                         <span class="text-muted">-</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ bizonylat.datum|date:"Y-m-d" }}</td>
+                                <td>
+                                    {{ bizonylat.datum|date:"Y-m-d" }}
+                                </td>
+                                <td>
+                                    <a href="{% url 'raktar:export_bizonylat_pdf' bizonylat.id %}" class="btn btn-sm btn-danger">PDF</a>
+                                    <a href="{% url 'raktar:export_bizonylat_csv' bizonylat.id %}" class="btn btn-sm btn-success">CSV</a>                                    
+                                </td>
                                 <td>
                                     <form method="POST" action="{% url 'raktar:megnyit_bizonylat' bizonylat.id %}" style="display: inline;">
                                         {% csrf_token %}
