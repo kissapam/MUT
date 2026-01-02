@@ -71,7 +71,10 @@
                                    required>
                             <datalist id="alkatreszek">
                                 {% for item in alkatreszek %}
-                                    <option value="{{ item.cikkszam }}">{{ item.leiras }}</option>
+                                    <option value="{{ item.cikkszam }}"
+                                            data-ar="{{ item.listaar }}">
+                                        {{ item.leiras }}
+                                    </option>
                                 {% endfor %}
                             </datalist>
                         </div>
@@ -161,4 +164,27 @@
         </div>
     </main>
 </div>
+
+<script>
+    // Django → JavaScript szorzó
+    const szorzo = {{ szorzo|safe }};
+
+    document.getElementById("ujAlkatresz").addEventListener("input", function () {
+        let value = this.value;
+        let options = document.querySelectorAll("#alkatreszek option");
+
+        options.forEach(opt => {
+            if (opt.value === value) {
+                let beszerzesiAr = parseFloat(opt.dataset.ar);
+
+                if (!isNaN(beszerzesiAr)) {
+                    let eladasiAr = Math.round(beszerzesiAr * szorzo);
+                    document.getElementById("ujAktualisar").value = eladasiAr;
+                }
+            }
+        });
+    });
+</script>
+
+
 {% endblock %}

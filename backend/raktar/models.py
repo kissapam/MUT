@@ -75,6 +75,9 @@ class Bizonylatsor(models.Model):
 class AlapAdat(models.Model):
     ev = models.CharField(max_length=10, null=False)
     maxBizId = models.IntegerField(default=0)
+    szorzo = models.FloatField(default=1.1)
 
     def __str__(self):
         return self.ev +"--"+str(self.maxBizId)
+
+    

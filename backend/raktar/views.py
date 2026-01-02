@@ -419,7 +419,7 @@ def addKivbizonylat(request):
     
     return redirect("raktar:kivbizonylat")
 
-
+@login_required
 def addKivbizonylatsor(request):
     """Tétel hozzáadása kivételi bizonylathoz"""
     if request.method == "POST":
@@ -458,6 +458,10 @@ def addKivbizonylatsor(request):
                     messages.error(request, "A mennyiségnek pozitív számnak kell lennie!")
                     return redirect(request.META.get('HTTP_REFERER'))
                 
+                if newAlkatreszPeldany.keszlet < newMennyiseg:
+                    messages.error(request, f"Nincs elég készlet a {newAlkatreszPeldany.cikkszam} alkatrészből! (Készlet: {newAlkatreszPeldany.keszlet})")
+                    return redirect(request.META.get('HTTP_REFERER'))
+                
                 if newAktualisar <= 0:
                     messages.error(request, "Az árnak pozitív számnak kell lennie!")
                     return redirect(request.META.get('HTTP_REFERER'))
@@ -482,7 +486,7 @@ def addKivbizonylatsor(request):
             
             # Készlet frissítése (kivételnél -)
             newAlkatreszPeldany.keszlet -= newMennyiseg
-            newAlkatreszPeldany.listaar = newAktualisar
+            # newAlkatreszPeldany.listaar = newAktualisar
             newAlkatreszPeldany.save()
             
             # Sikeres üzenet
@@ -498,14 +502,19 @@ def addKivbizonylatsor(request):
     
     return redirect(request.META.get('HTTP_REFERER', 'raktar:bebizonylat'))
 
-
-
-
 @login_required
 def kivBizonylatsorok(request, pk):
     aktualis_bizonylat = get_object_or_404(Bizonylat, pk=pk)
     aktualis_alakterszek = Alkatresz.objects.all()
     aktualisbiz_sorai = aktualis_bizonylat.sorok.all()
+    
+    # szorzószám az alapadat modelből                                              
+    alapadat = AlapAdat.objects.first() 
+    if alapadat:
+        szorzo = alapadat.szorzo
+    else:
+        szorzo = 1.1 # ha mégsem találja    
+    
     osszeg = 0
     for sor in aktualisbiz_sorai:
         osszeg += sor.aktualisar * sor.mennyiseg
@@ -513,11 +522,9 @@ def kivBizonylatsorok(request, pk):
         "alkatreszek": aktualis_alakterszek,
         "bizonylat": aktualis_bizonylat,
         "sorok": aktualisbiz_sorai,
-        "osszeg": f"{osszeg:,.0f} ft".replace(",", ".")
+        "osszeg": f"{osszeg:,.0f} ft".replace(",", "."),
+        "szorzo": szorzo,
     })
-
-
-
 
 @login_required
 def deleteKivbizonylat(request, biz_id):
