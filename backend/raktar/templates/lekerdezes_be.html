@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Lekérdezés :{% endblock %}
+
+{% block content %}
+<section>     
+    <h3>Bevételezett alkatrész keresés</h3>
+    <p>Lehetőség Beszállító és(vagy) cikkszám részlet alapján szűkíteni a találatokat.</p>
+
+    <form action="{% url 'raktar:lekerdezes_be' %}" method="post">
+        {% csrf_token %}
+        <p>
+            <label>
+                Beszállító: <!-- A SELECT lecserélve DATALIST-re a könnyebb keresés érdekében  -->
+                <input list="beszallitok" name="keresettBeszallito" id="keresettBeszallito">
+                <datalist id="beszallitok">
+                    {% for item in beszallitok %}
+                    <option value="{{ item.beszallito }}">
+                    {% endfor %}
+                </datalist>
+            </label>
+            <label>
+                Cikkszám (részlet is elég):
+                <input type="text" name="keresettCikkszam" value="{{ kivalasztott_cikk }}">
+            </label>
+            <input type="submit" value="Lekérdezés">
+        </p>
+    </form>
+</section>
+
+<section>
+    <h3>Eredmény: </h3>
+    <table border="1">
+        <tr>
+            <th>cikkszam</th>
+            <th>datum</th>
+            <th>ár</th>
+            <th>db.</th>
+            <th>beszállító</th>
+            <th>szállítólevélszám</th>
+            <th>számlaszám</th>
+        </tr>
+        {% for i in sorok %}
+        <tr>
+            <td>{{ i.alkatresz.cikkszam }}</td>
+            <td>{{ i.bizonylat.datum }}</td>
+            <td>{{ i.aktualisar }}</td>
+            <td>{{ i.mennyiseg }}</td>       
+            <td>{{ i.bizonylat.szallito.beszallito }}</td>
+            <td>{{ i.bizonylat.szallitolevelszam }}</td>
+            <td>{{ i.bizonylat.szamlaszam }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+{% endblock %}

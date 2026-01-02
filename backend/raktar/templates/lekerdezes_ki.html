@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Lekérdezés :{% endblock %}
+
+{% block content %}
+<section>
+    <h3>Kiadott alkatrész keresés</h3>
+    <p>Lehetőség Rendszám és(vagy) cikkszám részlet alapján szűkíteni a találatokat.</p>
+
+    <form action="{% url 'raktar:lekerdezes_ki' %}" method="post">
+        {% csrf_token %}
+        <p>
+            <label>
+                Rendszám: <!-- A SELECT lecserélve DATALIST-re a könnyebb keresés érdekében  -->
+                <input list="rendszamok" name="keresettRendszam" id="keresettRendszam">
+                <datalist id="rendszamok">
+                    {% for item in rendszamok %}
+                    <option value="{{ item.rendszam }}">
+                    {% endfor %}
+                </datalist>
+            </label>
+            <label>
+                Cikkszám (részlet is elég):
+                <input type="text" name="keresettCikkszam" value="{{ kivalasztott_cikk }}">
+            </label>
+            <input type="submit" value="Lekérdezés">
+        </p>
+    </form>
+</section>
+
+<section>
+    <h3>Eredmény: </h3>
+    <table border="1">
+        <tr>
+            <th>cikkszam</th>
+            <th>datum</th>
+            <th>ár</th>
+            <th>db.</th>
+        </tr>
+        {% for i in sorok %}
+        <tr>
+            <td>{{ i.alkatresz.cikkszam }}</td>
+            <td>{{ i.bizonylat.datum }}</td>
+            <td>{{ i.aktualisar }}</td>
+            <td>{{ i.mennyiseg }}</td>           
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Lekérdezés :{% endblock %}
+
+{% block content %}
+<section>
+    <h3>Összes bevétel és kiadás lekérdezése</h3>
+    <p>Lehetőség van cikkszám részlet alapján szűkíteni a találatokat.</p>
+<form method="post">
+    {% csrf_token %}
+    <label>
+        Cikkszám (részlet):
+        <input type="text" name="keresettCikkszam" value="{{ keresett_cikk }}">
+    </label>
+    <input type="submit" value="Keresés">
+</form>
+
+{% if sorok %}
+<table border="1">
+    <tr>
+        <th>Cikkszám</th>
+        <th>Leírás</th>
+        <th>Mennyiség</th>
+        <th>Típus</th>
+        <th>Beszállító</th>
+        <th>Rendszám</th>
+        <th>Dátum</th>
+    </tr>
+
+    {% for s in sorok %}
+    <tr>
+        <td>{{ s.alkatresz.cikkszam }}</td>
+        <td>{{ s.alkatresz.leiras }}</td>
+        <td>{{ s.mennyiseg }}</td>
+
+        <td>
+            {% if s.bizonylat.bizonylattipus %}
+                Bevét
+            {% else %}
+                Kiadás
+            {% endif %}
+        </td>
+
+        <td>{{ s.bizonylat.szallito.beszallito }}</td>
+        <td>{{ s.bizonylat.rendszam.rendszam }}</td>
+        <td>{{ s.bizonylat.datum }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+</section>
+{% endblock %}
