@@ -1,57 +1,145 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Kivételi bizonylatok{% endblock %}
+{% block title %}Kivételi bizonylatok - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/kivbizonylat.css' %}">
+{% endblock %}
 
 {% block content %}
-<section>
-    <form action="{% url 'raktar:addKivbizonylat' %}" method="post">
-        {% csrf_token %}
-        <p>Paraméterek:<br>
-            <label>
-                Rendszám: <!-- A SELECT lecserélve DATALIST-re a könnyebb keresés érdekében  -->
-                <input list="rendszamok" name="ujRendszam" id="ujRendszam">
-                <datalist id="rendszamok">
-                    {% for item in rendszamok %}
-                    <option value="{{ item.rendszam }}">
-                    {% endfor %}
-                </datalist>
-            </label>
-            <label>
-                Dátum: <input type="date" name="ujDatum" id="ujDatum">
-            </label>
-            <input type="submit" value="Új Kivételi bizonylat">
-        </p>
-    </form>
-</section>
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <!--<a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a>-->
+    </div>
+</header>
 
-<section>
-    <h3>Kivételi Bizonylatok: </h3>
-    <table border="1">
-        <tr>
-            <th>id</th>
-            <th>gen_id</th>
-            <th>rendszám</th>
-            <th>bizonylattipus</th>            
-            <th>dátum</th>
-            <th>lezárt</th>
-            <th>törlés</th>
-        </tr>
-        {% for i in kivbizonylatok %}
-        <tr>
-            <td>{{ i.id }}</td>
-            <td>{{ i.genbizid }}</td>
-            <td>{{ i.rendszam }}</td>
-            <td>{{ i.bizonylattipus }}</td>            
-            <td>{{ i.datum }}</td>
-            <td>{{ i.lezart }}</td>
-            <td>
-                <form action="{% url 'raktar:deleteKivbizonylat' i.id %}" method="post" style="display:inline;">
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <!-- ÜZENETEK MEGJELENÍTÉSE -->
+            {% if messages %}
+                <div class="messages-container mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle me-2"></i>
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% elif message.tags == 'info' %}
+                                <i class="fas fa-info-circle me-2"></i>
+                            {% endif %}
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h2><i class="fas fa-arrow-up me-3"></i>Kivételi bizonylatok kezelése</h2>
+            
+            <!-- Új Kivételi bizonylat hozzáadása -->
+            <div class="form-section">
+                <form method="POST" action="{% url 'raktar:addKivbizonylat' %}" class="row g-3 align-items-end">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
+                    <div class="col-md-5">
+                        <label for="ujRendszam" class="form-label">Rendszám:</label>
+                        <input list="rendszamok" class="form-control" id="ujRendszam" name="ujRendszam" placeholder="Válasszon vagy írja be a rendszámot" required>
+                        <datalist id="rendszamok">
+                            {% for item in rendszamok %}
+                                <option value="{{ item.rendszam }}">{{ item.tulajdonos }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ujDatum" class="form-label">Dátum:</label>
+                        <input type="date" class="form-control" id="ujDatum" name="ujDatum" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-save w-100">
+                            <i class="fas fa-save me-2"></i>Mentés
+                        </button>
+                    </div>
                 </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</section>
+            </div>
+
+            <!-- Kivételi bizonylatok táblázata -->
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Kivételi bizonylatok listája</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <!--<th>ID</th>-->
+                                <th>Bizonylat szám</th>
+                                <th>Rendszám</th>
+                                <th>Tulajdonos</th>
+                                <th>Dátum</th>
+                                <th>Lezárás</th>
+                                <th>Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bizonylat in kivbizonylatok %}
+                            <tr>
+                                <!--<td><strong>#{{ bizonylat.id }}</strong></td>-->
+                                <td><span class="bizonylat-badge">{{ bizonylat.genbizid }}</span></td>
+                                <td><span class="rendszam-badge">{{ bizonylat.rendszam.rendszam }}</span></td>
+                                <td>{{ bizonylat.rendszam.tulajdonos }}</td>
+                                <td>{{ bizonylat.datum|date:"Y-m-d" }}</td>
+                                <td>
+                                    {% if bizonylat.lezart %}
+                                        <span class="status-badge status-closed">
+                                            <i class="fas fa-lock me-1"></i>Lezárva
+                                        </span>
+                                    {% else %}
+                                        <form method="POST" action="{% url 'raktar:lezarKivbizonylat' bizonylat.id %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-close-doc" onclick="return confirm('Biztosan lezárja a {{ bizonylat.genbizid }} bizonylatot?')">
+                                                <i class="fas fa-lock me-1"></i>Lezárás
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form method="POST" action="{% url 'raktar:deleteKivbizonylat' bizonylat.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Biztosan törli?')">
+                                            <i class="fas fa-trash me-1"></i>Törlés
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Még nincs rögzített kivételi bizonylat.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const datumInput = document.getElementById('ujDatum');
+    if (datumInput && !datumInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        datumInput.value = today;
+    }
+});
+</script>
 {% endblock %}

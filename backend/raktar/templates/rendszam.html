@@ -1,48 +1,96 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Rendszámok karbantartása{% endblock %}
+{% block title %}Gépjárművek - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/gepjarmuvek.css' %}">
+{% endblock %}
 
 {% block content %}
-    <div class="container">        
-        <section>
-            <h3>Rendszám felvitele:</h3>
-            <form action=" {% url 'raktar:addRendszam' %} " method="post">
-                {% csrf_token %}
-                <label>
-                    <p>Forgalmi rendszám: <input type="text" name="ujRendszam" id="ujRendszam"></p>
-                </label>
-                <label>
-                    <p>Tulajdonos<input type="text" name="ujTulajdonos" id="ujTulajdonos"></p>
-                </label>
-                <label>
-                    <p><input type="submit" value="Hozzáad"></p>
-                </label>
-            </form>
-        </section>
-        <section>
-            <!-- Rendszámok listája az adatbázisból -->
-            <h3>Rendszámok listája:</h3>
-            <table>
-                <tr>
-                    <th>Rendszám</th>
-                    <th>Tulajdonos</th>
-                    <th>Lezárt</th>
-                    <th>Töröl</th>
-                </tr>
-                {% for rendszam in rendszamok %}
-                <tr>
-                    <td>{{rendszam.rendszam}}</td>
-                    <td>{{rendszam.tulajdonos}}</td>
-                    <td>{{rendszam.lezart}}</td>
-                    <td>  <!-- Elegáns megoldás egy mini ürlappal !-->
-                        <form method="post" action="{% url 'raktar:deleteRendszamById' rendszam.id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-        </section>
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <!--<a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a> -->
     </div>
+</header>
+
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <h2><i class="fas fa-car me-3"></i>Gépjárművek kezelése</h2>
+            
+            <!-- Gépjármű hozzáadása -->
+            <div class="form-section">
+                <form method="POST" action="{% url 'raktar:addRendszam' %}" class="row g-3 align-items-end">
+                    {% csrf_token %}
+                    <div class="col-md-4">
+                        <label for="ujRendszam" class="form-label">Gépkocsi rendszáma:</label>
+                        <input type="text" class="form-control" id="ujRendszam" name="ujRendszam" placeholder="pl. ABC-123" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ujTulajdonos" class="form-label">Gépkocsi tulajdonosa:</label>
+                        <input type="text" class="form-control" id="ujTulajdonos" name="ujTulajdonos" placeholder="Tulajdonos neve" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-save w-100">
+                            <i class="fas fa-save me-2"></i>Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Gépjárművek táblázata -->
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Gépjárművek listája</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <!--<th>Egyedi azonosító</th>-->
+                                <th>Gépkocsi rendszáma</th>
+                                <th>Tulajdonos</th>
+                                <th>Lezárt</th>
+                                <th>Törlés</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rendszam in rendszamok %}
+                            <tr>
+                                <!--<td><strong>#{{ rendszam.id }}</strong></td>-->
+                                <td><span class="rendszam-badge">{{ rendszam.rendszam }}</span></td>
+                                <td>{{ rendszam.tulajdonos }}</td>
+                                <td>
+                                    <span class="badge {% if rendszam.lezart %}badge-closed{% else %}badge-open{% endif %}">
+                                        {% if rendszam.lezart %}Lezárt{% else %}Aktív{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{% url 'raktar:deleteRendszamById' rendszam.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Biztosan törli?')">
+                                            <i class="fas fa-trash me-2"></i>Törlés
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Még nincs rögzített gépjármű.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 {% endblock %}

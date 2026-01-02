@@ -1,0 +1,261 @@
+/* bebizonylatsorok.css - Bizonylat sorok */
+
+/* Info kártya - Bizonylat adatok */
+.info-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.info-card .info-item {
+    margin: 0;
+    font-weight: 600;
+}
+
+.info-card .info-item:last-child {
+    border-bottom: none;
+}
+
+.info-card .info-label {
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.info-card .info-value {
+    font-weight: 600;
+}
+
+/* Form szekció - konzisztens a többi oldallal */
+.form-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.form-section h4 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+/* Összeg szekció */
+.summary-section {
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    text-align: center;
+}
+
+.summary-card h4 {
+     margin: 0;
+    font-weight: 600;
+}
+
+.summary-card .amount {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Táblázat szekció */
+.table-section {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+
+
+
+/* Táblázat stílusok */
+.table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.table thead th {
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+/* Badge-ek  */
+.badge-open {
+    background-color: #28a745;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.badge-closed {
+    background-color: #6c757d;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Datalist input stílus */
+input[list] {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
+
+/* Gombok - konzisztens a többi oldallal */
+.btn-save {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+    border: none;
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+/* Üres állapot */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.fa-inbox {
+    color: #ccc;
+}
+/* Fémes téma felülírások */
+.metallic .form-section {
+    background: linear-gradient(145deg, #d5dbdb, #bdc3c7);
+}
+
+.metallic .btn-save {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    border: 1px solid #2c3e50;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-save:hover {
+    background: linear-gradient(145deg, #3d566e, #34495e);
+    box-shadow: 8px 8px 15px rgba(0,0,0,0.4);
+}
+
+.metallic .btn-secondary {
+    background: linear-gradient(145deg, #7f8c8d, #95a5a6);
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-secondary:hover {
+    box-shadow: 8px 8px 15px rgba(0,0,0,0.4);
+}
+
+.metallic .table-section {
+    background: linear-gradient(145deg, #ecf0f1, #d5dbdb);
+}
+
+.metallic .table thead {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+}
+
+.metallic .btn-info {
+    background: linear-gradient(145deg, #3498db, #2980b9);
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-info:hover {
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+}
+
+.metallic .btn-delete {
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+}
+
+.metallic .btn-delete:hover {
+    box-shadow: 5px 5px 12px rgba(0,0,0,0.4);
+}
+
+.metallic .form-control, .metallic .form-select {
+    background: linear-gradient(145deg, #ffffff, #ecf0f1);
+    border: 1px solid #bdc3c7;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.metallic .form-control:focus, .metallic .form-select:focus {
+    background: #ffffff;
+    border-color: #7f8c8d;
+}
+
+.metallic .cikkszam-badge {
+    background: transparent;
+    color: #2c3e50;
+    box-shadow: none;
+}
+
+.metallic .info-card {
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+}
+.metallic .summary-card{
+    background: linear-gradient(145deg, #34495e, #2c3e50);
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+}
+
+.metallic .info-box {
+    background: linear-gradient(145deg, #ecf0f1, #d5dbdb);
+    border-left: 4px solid #34495e;
+}
+
+.metallic .info-item strong {
+    color: #34495e;
+}
+
+.metallic .modal-content {
+    background: linear-gradient(145deg, #ecf0f1, #d5dbdb);
+}

@@ -1,52 +1,188 @@
-<h2>Alkatrész szerkesztése</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }} <!-- A view ban átadott mezőket p tag-ba csomagolja-->
-    <button type="submit" class="btn btn-success">Mentés</button> <!-- elküldi a szervernek az ürlapot-->
-    <a href="{% url 'raktar:alkatresz' %}" class="btn btn-secondary">Mégse</a> <!-- Mégse gomb visszairányít az alkatresz listához-->
-</form>
+{% extends 'base.html' %}
+{% load static %}
 
-<!-- 
-<h2>Alkatrész szerkesztése ha nem a form.as_p egyszerűsítést használnád (lehetne hozzá css is!)</h2>
-<form method="post">
-    {% csrf_token %}
+{% block title %}Alkatrész szerkesztése - Raktárkezelő{% endblock %}
 
-    <div class="form-group">
-        <label for="id_cikkszam">Cikkszám:</label>
-        {{ form.cikkszam }}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/alkatreszek.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a>
     </div>
+</header>
 
-    <div class="form-group">
-        <label for="id_leiras">Leírás:</label>
-        {{ form.leiras }}
-    </div>
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
 
-    <div class="form-group">
-        <label for="id_info">Info:</label>
-        {{ form.info }}
-    </div>
+    <main class="content-area">
+        <div id="contentContainer">
+            <h2><i class="fas fa-edit me-3"></i>Alkatrész szerkesztése</h2>
+            
+            <!-- Alkatrész info kártya -->
+            <div class="info-card mb-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="text-white mb-3">
+                            <i class="fas fa-cog me-2"></i>
+                            <span class="cikkszam-highlight">{{ form.instance.cikkszam }}</span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
 
-    <div class="form-group">
-        <label for="id_mertekegyseg">Mértékegység:</label>
-        {{ form.mertekegyseg }}
-    </div>
+            <!-- Szerkesztő form -->
+            <div class="form-section">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="id_cikkszam" class="form-label">
+                                <i class="fas fa-barcode me-2"></i>Cikkszám:
+                            </label>
+                            {{ form.cikkszam }}
+                            {% if form.cikkszam.errors %}
+                                <div class="text-danger mt-1">{{ form.cikkszam.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="id_mertekegyseg" class="form-label">
+                                <i class="fas fa-balance-scale me-2"></i>Mértékegység:
+                            </label>
+                            {{ form.mertekegyseg }}
+                            {% if form.mertekegyseg.errors %}
+                                <div class="text-danger mt-1">{{ form.mertekegyseg.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="id_alkatreszcsoport" class="form-label">
+                                <i class="fas fa-folder me-2"></i>Alkatrész-csoport:
+                            </label>
+                            {{ form.alkatreszcsoport }}
+                            {% if form.alkatreszcsoport.errors %}
+                                <div class="text-danger mt-1">{{ form.alkatreszcsoport.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label for="id_leiras" class="form-label">
+                                <i class="fas fa-align-left me-2"></i>Leírás:
+                            </label>
+                            {{ form.leiras }}
+                            {% if form.leiras.errors %}
+                                <div class="text-danger mt-1">{{ form.leiras.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="id_info" class="form-label">
+                                <i class="fas fa-info-circle me-2"></i>További információ:
+                            </label>
+                            {{ form.info }}
+                            {% if form.info.errors %}
+                                <div class="text-danger mt-1">{{ form.info.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label for="id_keszlet" class="form-label">
+                                <i class="fas fa-boxes me-2"></i>Készlet:
+                            </label>
+                            {{ form.keszlet }}
+                            {% if form.keszlet.errors %}
+                                <div class="text-danger mt-1">{{ form.keszlet.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="id_listaar" class="form-label">
+                                <i class="fas fa-tag me-2"></i>Listaár (Ft):
+                            </label>
+                            {{ form.listaar }}
+                            {% if form.listaar.errors %}
+                                <div class="text-danger mt-1">{{ form.listaar.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-4">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-save me-2">
+                                <i class="fas fa-save me-2"></i>Módosítások mentése
+                            </button>
+                            <a href="{% url 'raktar:alkatresz' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Mégse
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-    <div class="form-group">
-        <label for="id_alkatreszcsoport">Csoport:</label>
-        {{ form.alkatreszcsoport }}
-    </div>
+            <!-- Jelenleg tárolt értékek (opcionális info box) -->
+            <div class="info-box mt-4">
+                <h5 class="mb-3"><i class="fas fa-database me-2"></i>Jelenleg tárolt adatok</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <strong>Készlet:</strong>
+                            <span class="keszlet-badge {% if form.instance.keszlet == 0 %}keszlet-empty{% elif form.instance.keszlet < 10 %}keszlet-low{% endif %}">
+                                {{ form.instance.keszlet }} {{ form.instance.mertekegyseg.mertegys }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <strong>Listaár:</strong>
+                            <span class="text-primary">{{ form.instance.listaar|floatformat:0 }} Ft</span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="info-item">
+                            <strong>Készlet értéke:</strong>
+                            <span class="text-success">{% widthratio form.instance.keszlet 1 form.instance.listaar %} Ft</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <div class="form-group">
-        <label for="id_keszlet">Készlet:</label>
-        {{ form.keszlet }}
-    </div>
+        </div>
+    </main>
+</div>
 
-    <div class="form-group">
-        <label for="id_listaar">Listaár:</label>
-        {{ form.listaar }}
-    </div>
-
-    <button type="submit" class="btn btn-success">Mentés</button>
-    <a href="{% url 'raktar:alkatresz' %}" class="btn btn-secondary">Mégse</a>
-</form>  -->
-
+{% block extra_js %}
+<script>
+// Form mezők Bootstrap osztályok hozzáadása
+document.addEventListener('DOMContentLoaded', function() {
+    // Minden input mezőhöz adjuk hozzá a form-control osztályt
+    const inputs = document.querySelectorAll('input[type="text"], input[type="number"], textarea');
+    inputs.forEach(input => {
+        input.classList.add('form-control');
+    });
+    
+    // Select mezőkhöz form-select osztály
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.classList.add('form-select');
+    });
+    
+    // Textarea-k mérete
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        textarea.rows = 3;
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

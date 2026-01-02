@@ -1,43 +1,82 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Alkatrészek karbantartása{% endblock %}
+{% block title %}Alkatrész csoportok - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/alkatresz-csoportok.css' %}">
+{% endblock %}
 
 {% block content %}
-<body>
-    <div class="container">
-        <section>
-            <h3>Csoport hozzáadás</h3>
-            <form action=" {% url 'raktar:addAlkatreszCsoport' %} " method="post">
-                {% csrf_token %}
-                <label>
-                    <p>Alkatrészcsoport:
-                        <input type="text" name="ujAlkatreszCsoport" id="ujAlkatreszCsoport">
-                        <input type="submit" value="Hozzáad">
-
-                    </p>
-                </label>
-            </form>
-        </section>
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <!--<a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a> -->
     </div>
-        <section>
-            <h3>Alkatrészcsoprtok :</h3>
-            <table>
-            <tr>
-                <th>Id:</th>
-                <th>Csoport</th>
-                <th>Törlés</th>
-            {% for i in alkatreszcsoportok %}
-            </tr>
-                <td>{{i.id}}</td>
-                <td>{{i.alkcsop}}</td>
-                <td>  <!-- Elegáns megoldás egy mini ürlappal !-->
-                    <form method="post" action="{% url 'raktar:deleteAlkatreszCsoportById' i.id %}" style="display:inline;">
+</header>
+
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <h2><i class="fas fa-layer-group me-3"></i>Alkatrész csoportok kezelése</h2>
+            
+            <div class="form-section">
+                <form method="POST" action="{% url 'raktar:addAlkatreszCsoport' %}" class="row g-3 align-items-end">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-            </table>
-        </section>
+                    <div class="col-md-8">
+                        <label for="ujAlkatreszCsoport" class="form-label">Alkatrészcsoport:</label>
+                        <input type="text" class="form-control" id="ujAlkatreszCsoport" name="ujAlkatreszCsoport" placeholder="pl. Motoralkatrészek, Fékrendszer" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-save w-100">
+                            <i class="fas fa-save me-2"></i>Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Alkatrész csoportok listája</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <!--<th>Egyedi azonosító</th>-->
+                                <th>Alkatrészcsoport</th>
+                                <th>Törlés</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for csoport in alkatreszcsoportok %}
+                            <tr>
+                               <!--<th> <td><strong>#{{ csoport.id }}</strong></td>-->
+                                <td><span class="csoport-badge">{{ csoport.alkcsop }}</span></td>
+                                <td>
+                                    <form method="POST" action="{% url 'raktar:deleteAlkatreszCsoportById' csoport.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Biztosan törli?')">
+                                            <i class="fas fa-trash me-2"></i>Törlés
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Még nincs rögzített alkatrészcsoport.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 {% endblock %}

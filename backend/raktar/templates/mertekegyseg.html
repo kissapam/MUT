@@ -1,43 +1,82 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Mértékegységek{% endblock %}
+{% block title %}Mennyiség egységek - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/mennyiseg-egysegek.css' %}">
+{% endblock %}
 
 {% block content %}
-    <div class="container">        
-        <section>
-            <h3>Mértékegység hozzáadás</h3>
-            <form action=" {% url 'raktar:addMertekegyseg' %} " method="post">
-                {% csrf_token %}
-                <label>
-                    <p>Mértékegység:
-                        <input type="text" name="ujMertekegyseg" id="ujMertekegyseg">
-                        <input type="submit" value="Hozzáad">
-
-                    </p>
-                </label>
-            </form>
-        </section>
-        <section>
-            <h3>Mértékegységek az adatbázisból</h3>
-            <table>
-            <tr>
-                <th>Id</th>
-                <th>Csoport</th>
-                <th>Törlés</th>
-
-            {% for i in mertekegysegek %}
-            </tr>
-                <td>{{i.id}}</td>
-                <td>{{i.mertegys}}</td>               
-                <td>  <!-- Elegáns megoldás egy mini ürlappal !-->
-                    <form method="post" action="{% url 'raktar:deleteMertekegysegById' i.id %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">Törlés</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-            </table>
-        </section>        
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+        <!--<a href="{% url 'logout' %}" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i>Kilépés
+        </a> -->
     </div>
+</header>
+
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <h2><i class="fas fa-balance-scale me-3"></i>Mennyiség egységek kezelése</h2>
+            
+            <div class="form-section">
+                <form method="POST" action="{% url 'raktar:addMertekegyseg' %}" class="row g-3 align-items-end">
+                    {% csrf_token %}
+                    <div class="col-md-8">
+                        <label for="ujMertekegyseg" class="form-label">Mértékegység:</label>
+                        <input type="text" class="form-control" id="ujMertekegyseg" name="ujMertekegyseg" placeholder="pl. db, kg, liter, m" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-save w-100">
+                            <i class="fas fa-save me-2"></i>Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Mértékegységek listája</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                               <!-- <th>Egyedi azonosító</th>-->
+                                <th>Mértékegység</th>
+                                <th>Törlés</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mertekegyseg in mertekegysegek %}
+                            <tr>
+                                <!--<td><strong>#{{ mertekegyseg.id }}</strong></td>-->
+                                <td><span class="mertekegyseg-badge">{{ mertekegyseg.mertegys }}</span></td>
+                                <td>
+                                    <form method="POST" action="{% url 'raktar:deleteMertekegysegById' mertekegyseg.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Biztosan törli?')">
+                                            <i class="fas fa-trash me-2"></i>Törlés
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Még nincs rögzített mértékegység.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 {% endblock %}
