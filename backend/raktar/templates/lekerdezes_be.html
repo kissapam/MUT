@@ -1,56 +1,116 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Lekérdezés :{% endblock %}
+{% block title %}Bevételezett alkatrészek lekérdezése - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bebizonylat.css' %}">
+{% endblock %}
 
 {% block content %}
-<section>     
-    <h3>Bevételezett alkatrész keresés</h3>
-    <p>Lehetőség Beszállító és(vagy) cikkszám részlet alapján szűkíteni a találatokat.</p>
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+    </div>
+</header>
 
-    <form action="{% url 'raktar:lekerdezes_be' %}" method="post">
-        {% csrf_token %}
-        <p>
-            <label>
-                Beszállító: <!-- A SELECT lecserélve DATALIST-re a könnyebb keresés érdekében  -->
-                <input list="beszallitok" name="keresettBeszallito" id="keresettBeszallito">
-                <datalist id="beszallitok">
-                    {% for item in beszallitok %}
-                    <option value="{{ item.beszallito }}">
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <!-- ÜZENETEK MEGJELENÍTÉSE -->
+            {% if messages %}
+                <div class="messages-container mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle me-2"></i>
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% elif message.tags == 'info' %}
+                                <i class="fas fa-info-circle me-2"></i>
+                            {% endif %}
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     {% endfor %}
-                </datalist>
-            </label>
-            <label>
-                Cikkszám (részlet is elég):
-                <input type="text" name="keresettCikkszam" value="{{ kivalasztott_cikk }}">
-            </label>
-            <input type="submit" value="Lekérdezés">
-        </p>
-    </form>
-</section>
+                </div>
+            {% endif %}
 
-<section>
-    <h3>Eredmény: </h3>
-    <table border="1">
-        <tr>
-            <th>cikkszam</th>
-            <th>datum</th>
-            <th>ár</th>
-            <th>db.</th>
-            <th>beszállító</th>
-            <th>szállítólevélszám</th>
-            <th>számlaszám</th>
-        </tr>
-        {% for i in sorok %}
-        <tr>
-            <td>{{ i.alkatresz.cikkszam }}</td>
-            <td>{{ i.bizonylat.datum }}</td>
-            <td>{{ i.aktualisar }}</td>
-            <td>{{ i.mennyiseg }}</td>       
-            <td>{{ i.bizonylat.szallito.beszallito }}</td>
-            <td>{{ i.bizonylat.szallitolevelszam }}</td>
-            <td>{{ i.bizonylat.szamlaszam }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</section>
+            <h2><i class="fas fa-search me-3"></i>Bevételezett alkatrészek keresése</h2>
+            
+            <!-- Keresési form -->
+            <div class="form-section">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Lehetőség Beszállító és(vagy) cikkszám részlet alapján szűkíteni a találatokat.
+                </p>
+                <form action="{% url 'raktar:lekerdezes_be' %}" method="post" class="row g-3 align-items-end">
+                    {% csrf_token %}
+                    <div class="col-md-4">
+                        <label for="keresettBeszallito" class="form-label">Beszállító:</label>
+                        <input list="beszallitok" class="form-control" id="keresettBeszallito" name="keresettBeszallito" placeholder="Válasszon beszállítót">
+                        <datalist id="beszallitok">
+                            {% for item in beszallitok %}
+                                <option value="{{ item.beszallito }}">{{ item.beszallito }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="keresettCikkszam" class="form-label">Cikkszám (részlet is elég):</label>
+                        <input type="text" class="form-control" id="keresettCikkszam" name="keresettCikkszam" value="{{ kivalasztott_cikk }}" placeholder="pl. ABC-123">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-save w-100">
+                            <i class="fas fa-search me-2"></i>Lekérdezés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Eredmények táblázata -->
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Találatok</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Cikkszám</th>
+                                <th>Dátum</th>
+                                <th>Ár</th>
+                                <th>Mennyiség</th>
+                                <th>Beszállító</th>
+                                <th>Szállítólevél szám</th>
+                                <th>Számlaszám</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in sorok %}
+                            <tr>
+                                <td><span class="bizonylat-badge">{{ i.alkatresz.cikkszam }}</span></td>
+                                <td>{{ i.bizonylat.datum|date:"Y-m-d" }}</td>
+                                <td><strong>{{ i.aktualisar }} Ft</strong></td>
+                                <td>{{ i.mennyiseg }} db</td>
+                                <td>{{ i.bizonylat.szallito.beszallito }}</td>
+                                <td>{{ i.bizonylat.szallitolevelszam|default:"-" }}</td>
+                                <td>{{ i.bizonylat.szamlaszam|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                                    Nincs a keresési feltételeknek megfelelő találat.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 {% endblock %}
