@@ -35,8 +35,8 @@ class Alkatreszcsoport(models.Model):
 
 class Bizonylat(models.Model):
     genbizid = models.CharField(max_length=20)
-    szallito = models.ForeignKey(Beszallito, on_delete=models.CASCADE, related_name="bizonylatok", blank=True, null=True)
-    rendszam = models.ForeignKey(Rendszam, on_delete=models.CASCADE, related_name="bizonylatok", blank=True, null=True)
+    szallito = models.ForeignKey(Beszallito, on_delete=models.PROTECT, related_name="bizonylatok", blank=True, null=True)
+    rendszam = models.ForeignKey(Rendszam, on_delete=models.PROTECT, related_name="bizonylatok", blank=True, null=True)
     bizonylattipus = models.BooleanField()
     szamlaszam = models.CharField(max_length=50, blank=True, null=True)
     szallitolevelszam = models.CharField(max_length=50, blank=True, null=True)
@@ -61,8 +61,8 @@ class Alkatresz(models.Model):
 
 
 class Bizonylatsor(models.Model):
-    bizonylat = models.ForeignKey(Bizonylat, on_delete=models.CASCADE, related_name="sorok")
-    alkatresz = models.ForeignKey(Alkatresz, to_field="cikkszam", on_delete=models.CASCADE, related_name="bizonylatsorok")
+    bizonylat = models.ForeignKey(Bizonylat, on_delete=models.PROTECT, related_name="sorok")
+    alkatresz = models.ForeignKey(Alkatresz, to_field="cikkszam", on_delete=models.PROTECT, related_name="bizonylatsorok")
     mennyiseg = models.FloatField()
     aktualisar = models.IntegerField()
 
@@ -75,6 +75,9 @@ class Bizonylatsor(models.Model):
 class AlapAdat(models.Model):
     ev = models.CharField(max_length=10, null=False)
     maxBizId = models.IntegerField(default=0)
+    szorzo = models.FloatField(default=1.1)
 
     def __str__(self):
         return self.ev +"--"+str(self.maxBizId)
+
+    

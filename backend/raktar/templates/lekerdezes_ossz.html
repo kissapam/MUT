@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Összes bevétel és kiadás lekérdezése - Raktárkezelő{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bebizonylat.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="top-header" style="background-image: url('{% static 'assets/images/raktar.jpg' %}');">
+    <div class="header-right">
+        <span class="user-name"><i class="fas fa-user-circle me-2"></i>{{ user.username }}</span>
+    </div>
+</header>
+
+<div class="main-container">
+    {% include 'partials/sidebar.html' %}
+
+    <main class="content-area">
+        <div id="contentContainer">
+            <!-- ÜZENETEK MEGJELENÍTÉSE -->
+            {% if messages %}
+                <div class="messages-container mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle me-2"></i>
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% elif message.tags == 'info' %}
+                                <i class="fas fa-info-circle me-2"></i>
+                            {% endif %}
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h2><i class="fas fa-search me-3"></i>Összes bevétel és kiadás lekérdezése</h2>
+            
+            <!-- Keresési form -->
+            <div class="form-section">
+                <p class="text-muted mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Lehetőség van cikkszám részlet alapján szűkíteni a találatokat.
+                </p>
+                <form method="post" class="row g-3 align-items-end">
+                    {% csrf_token %}
+                    <div class="col-md-8">
+                        <label for="keresettCikkszam" class="form-label">Cikkszám (részlet):</label>
+                        <input type="text" class="form-control" id="keresettCikkszam" name="keresettCikkszam" value="{{ keresett_cikk }}" placeholder="pl. ABC-123">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-save w-100">
+                            <i class="fas fa-search me-2"></i>Keresés
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Eredmények táblázata -->
+            {% if sorok %}
+            <div class="table-section mt-4">
+                <h4 class="mb-3">Találatok</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Cikkszám</th>
+                                <th>Leírás</th>
+                                <th>Mennyiség</th>
+                                <th>Típus</th>
+                                <th>Beszállító</th>
+                                <th>Rendszám</th>
+                                <th>Dátum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in sorok %}
+                            <tr>
+                                <td><span class="bizonylat-badge">{{ s.alkatresz.cikkszam }}</span></td>
+                                <td>{{ s.alkatresz.leiras }}</td>
+                                <td>{{ s.mennyiseg }} db</td>
+                                <td>
+                                    {% if s.bizonylat.bizonylattipus %}
+                                        <span class="status-badge status-open">
+                                            <i class="fas fa-arrow-down me-1"></i>Bevétel
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge status-closed">
+                                            <i class="fas fa-arrow-up me-1"></i>Kiadás
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ s.bizonylat.szallito.beszallito|default:"-" }}</td>
+                                <td>{{ s.bizonylat.rendszam.rendszam|default:"-" }}</td>
+                                <td>{{ s.bizonylat.datum|date:"Y-m-d" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="table-section mt-4">
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
+                    <p>Nincs a keresési feltételeknek megfelelő találat.</p>
+                    <p class="small">Kezdjen el gépelni a keresőmezőbe a találatok megjelenítéséhez.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

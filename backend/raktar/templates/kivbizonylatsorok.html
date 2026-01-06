@@ -22,15 +22,15 @@
 
     <main class="content-area">
         <div id="contentContainer">
-            <h2><i class="fas fa-file-invoice me-3"></i>Bizonylat részletei: {{ bizonylat.genbizid }}</h2>
+            <h2><i class="fas fa-file-invoice me-3"></i>Kivételi bizonylat részletei: {{ bizonylat.genbizid }}</h2>
 
             <!-- Bizonylat információk kártya -->
             <div class="info-card">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="info-item">
-                            <span class="info-label"><i class="fas fa-truck me-2"></i>Beszállító:</span>
-                            <span class="info-value">{{ bizonylat.szallito.beszallito }}</span>
+                            <span class="info-label"><i class="fas fa-truck me-2"></i>Rendszám:</span>
+                            <span class="info-value">{{ bizonylat.rendszam.rendszam }}</span>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -39,18 +39,7 @@
                             <span class="info-value">{{ bizonylat.datum|date:"Y. m. d." }}</span>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="info-item">
-                            <span class="info-label"><i class="fas fa-file-invoice me-2"></i>Számlaszám:</span>
-                            <span class="info-value">{{ bizonylat.szamlaszam|default:"Nincs megadva" }}</span>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="info-item">
-                            <span class="info-label"><i class="fas fa-file-alt me-2"></i>Szállítólevél:</span>
-                            <span class="info-value">{{ bizonylat.szallitolevelszam|default:"Nincs megadva" }}</span>
-                        </div>
-                    </div>
+                    
                     <div class="col-md-6">
                         <div class="info-item">
                             <span class="info-label"><i class="fas fa-lock me-2"></i>Állapot:</span>
@@ -67,7 +56,7 @@
             <!-- Tétel hozzáadása form -->
             <div class="form-section">
                 <h4 class="mb-3"><i class="fas fa-plus-circle me-2"></i>Új tétel hozzáadása</h4>
-                <form method="POST" action="{% url 'raktar:addBebizonylatsor' %}">
+                <form method="POST" action="{% url 'raktar:addKivbizonylatsor' %}">
                     {% csrf_token %}
                     <input type="hidden" name="bizonylat_id" value="{{ bizonylat.id }}">
                     
@@ -82,7 +71,10 @@
                                    required>
                             <datalist id="alkatreszek">
                                 {% for item in alkatreszek %}
-                                    <option value="{{ item.cikkszam }}">{{ item.leiras }}</option>
+                                    <option value="{{ item.cikkszam }}"
+                                            data-ar="{{ item.listaar }}">
+                                        {{ item.leiras }}
+                                    </option>
                                 {% endfor %}
                             </datalist>
                         </div>
@@ -99,7 +91,7 @@
                         </div>
                         
                         <div class="col-md-3">
-                            <label for="ujAktualisar" class="form-label">Aktuális ár (Ft):</label>
+                            <label for="ujAktualisar" class="form-label">Eladási Aktuális ár (Ft):</label>
                             <input type="number" 
                                    class="form-control" 
                                    id="ujAktualisar" 
@@ -165,11 +157,34 @@
 
             <!-- Vissza gomb -->
             <div class="mt-4">
-                <a href="{% url 'raktar:bebizonylat' %}" class="btn btn-secondary">
+                <a href="{% url 'raktar:kivbizonylat' %}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Vissza a bizonylatokhoz
                 </a>
             </div>
         </div>
     </main>
 </div>
+
+<script>
+    // Django → JavaScript szorzó
+    const szorzo = {{ szorzo|safe }};
+
+    document.getElementById("ujAlkatresz").addEventListener("input", function () {
+        let value = this.value;
+        let options = document.querySelectorAll("#alkatreszek option");
+
+        options.forEach(opt => {
+            if (opt.value === value) {
+                let beszerzesiAr = parseFloat(opt.dataset.ar);
+
+                if (!isNaN(beszerzesiAr)) {
+                    let eladasiAr = Math.round(beszerzesiAr * szorzo);
+                    document.getElementById("ujAktualisar").value = eladasiAr;
+                }
+            }
+        });
+    });
+</script>
+
+
 {% endblock %}

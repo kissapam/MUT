@@ -11,7 +11,6 @@ body {
 }
 
 .top-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -26,6 +25,7 @@ body {
     left: 0;
     right: 0;
     z-index: 1000;
+    background-image: url("../assets/images/raktar.jpg") !important;
 }
 
 /* Háttérkép átlátszósága */
