@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import Http404
 from .forms import AlkatreszForm
-### Importok a fájl exportáláshoz  (pdf és csv)  
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -879,3 +878,37 @@ def export_bizonylat_pdf(request, biz_id):
         content_type='application/pdf',
         headers={'Content-Disposition': f'attachment; filename="bizonylat_{biz.genbizid}.pdf"'}
     )
+
+############################################# BEVÉTELI SOR TÖRLÉSE (majdnem elmaradt)
+
+@login_required
+def bevet_sor_torles(request, pk):
+    sor = get_object_or_404(Bizonylatsor, pk=pk)
+    alkatresz = sor.alkatresz
+    biz = sor.bizonylat
+
+    if request.method == "POST":
+        alkatresz.keszlet -= sor.mennyiseg
+        alkatresz.save()
+        sor.delete()
+
+        messages.success(request, "A bevét tétel törölve lett.")
+        return redirect("raktar:beBizonylatsorok", biz.id)
+
+
+############################################# KIVÉTELI SOR TÖRLÉSE (majdnem elmaradt)
+
+@login_required
+def kivet_sor_torles(request, pk):
+    sor = get_object_or_404(Bizonylatsor, pk=pk)
+    alkatresz = sor.alkatresz
+    biz = sor.bizonylat
+
+    if request.method == "POST":
+        alkatresz.keszlet += sor.mennyiseg
+        alkatresz.save()
+        sor.delete()
+
+        messages.success(request, "A kivét tétel törölve lett.")
+        return redirect("raktar:kivBizonylatsorok", biz.id)
+
