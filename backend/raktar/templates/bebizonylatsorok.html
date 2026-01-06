@@ -132,9 +132,11 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th>Törlés</th>
                                 <th>Cikkszám</th>
                                 <th>Termék</th>
                                 <th class="text-end">Mennyiség</th>
+                                <th class="text-end">Mértékegység</th>
                                 <th class="text-end">Egységár</th>
                                 <th class="text-end">Összeg</th>
                             </tr>
@@ -142,9 +144,18 @@
                         <tbody>
                             {% for sor in sorok %}
                             <tr>
+                                <td>
+                                    <form method="POST" action="{% url 'raktar:bevet_sor_torles' sor.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                    </button>
+                                    </form>
+                                </td>
                                 <td><strong>{{ sor.alkatresz.cikkszam }}</strong></td>
                                 <td>{{ sor.alkatresz.leiras }}</td>
                                 <td class="text-end">{{ sor.mennyiseg }}</td>
+                                <td class="text-end">{{ sor.alkatresz.mertekegyseg }}</td>
                                 <td class="text-end">{{ sor.aktualisar|floatformat:0 }} Ft</td>
                                 <td class="text-end">
                                     <strong>{% widthratio sor.mennyiseg 1 sor.aktualisar %} Ft</strong>

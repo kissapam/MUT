@@ -72,4 +72,7 @@ urlpatterns = [
     path("lekerdezes_be/", views.lekerdezes_be, name="lekerdezes_be"),
     path("lekerdezes_ossz/", views.lekerdezes_ossz, name="lekerdezes_ossz"),
     
+    # Kimaradt a bizonylatsorok törlése, később a helyére teszem ezeket.
+    path("bevetbizonylatsor/<int:pk>/torles/", views.bevet_sor_torles, name="bevet_sor_torles"),
+    path("kivetbizonylatsor/<int:pk>/torles/", views.kivet_sor_torles, name="kivet_sor_torles"),
 ]
