@@ -75,4 +75,7 @@ urlpatterns = [
     # Kimaradt a bizonylatsorok törlése, később a helyére teszem ezeket.
     path("bevetbizonylatsor/<int:pk>/torles/", views.bevet_sor_torles, name="bevet_sor_torles"),
     path("kivetbizonylatsor/<int:pk>/torles/", views.kivet_sor_torles, name="kivet_sor_torles"),
+    
+    # API végpont a leltár eléréséhez
+    path("api/leltar/", views.leltar_api, name="leltar_api"),
 ]

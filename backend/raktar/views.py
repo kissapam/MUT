@@ -16,6 +16,11 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
 from io import BytesIO
 import csv
+#### Importok az API szolgáltatáshoz
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from .serializers import AlkatreszSerializer
 
 ############################################ MENU 
 def home(request):
@@ -912,4 +917,18 @@ def kivet_sor_torles(request, pk):
 
         messages.success(request, "A kivét tétel törölve lett.")
         return redirect("raktar:kivBizonylatsorok", biz.id)
+############################################## API VIEW - LELTÁR ADATOK szolgáltatása
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def leltar_api(request):
+    alkatreszek = Alkatresz.objects.all().select_related('mertekegyseg', 'alkatreszcsoport')
+    serializer = AlkatreszSerializer(alkatreszek, many=True)
 
+    total_quantity = sum(a.keszlet for a in alkatreszek)
+    total_value = sum(a.keszlet * a.listaar for a in alkatreszek)
+
+    return Response({
+        "alkatreszek": serializer.data,
+        "total_quantity": total_quantity,
+        "total_value": total_value,
+    })
